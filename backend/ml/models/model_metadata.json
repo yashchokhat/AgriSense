@@ -1,0 +1,43 @@
+{
+  "model_type": "RandomForestClassifier",
+  "model_version": "v1.0.0-rf-agronomic",
+  "created_at": "2026-10-22T22:01:22.259947+00:00",
+  "features": [
+    "soil_moisture_estimate_percent",
+    "soil_ao_raw",
+    "temperature_c",
+    "humidity_percent",
+    "vpd_kpa",
+    "soil_type_code",
+    "crop_type_code"
+  ],
+  "feature_importances": {
+    "soil_moisture_estimate_percent": 0.47,
+    "soil_ao_raw": 0.4022,
+    "temperature_c": 0.0125,
+    "humidity_percent": 0.0123,
+    "vpd_kpa": 0.016,
+    "soil_type_code": 0.0815,
+    "crop_type_code": 0.0056
+  },
+  "evaluation_metrics": {
+    "accuracy": 0.9833,
+    "precision": 0.9857,
+    "recall": 0.9673,
+    "f1_score": 0.9764,
+    "confusion_matrix": [
+      [
+        383,
+        3
+      ],
+      [
+        7,
+        207
+      ]
+    ],
+    "baseline_logistic_regression_f1": 0.9693
+  },
+  "training_samples": 2400,
+  "test_samples": 600,
+  "status": "trained_and_validated"
+}

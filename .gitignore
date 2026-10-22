@@ -1,5 +1,6 @@
 # Secrets & Credentials
 *.json
+!backend/ml/models/model_metadata.json
 !agrisense/web/manifest.json
 !agrisense/analysis_options.yaml
 !app/web/manifest.json
