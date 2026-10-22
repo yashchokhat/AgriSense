@@ -1,0 +1,44 @@
+# Secrets & Credentials
+*.json
+!agrisense/web/manifest.json
+!agrisense/analysis_options.yaml
+!app/web/manifest.json
+!app/analysis_options.yaml
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+htmlcov/
+*.joblib
+*.pkl
+
+# Flutter & Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.vscode/
+.DS_Store
+
+# Mac / System
+.DS_Store
+.AppleDouble
+.LSOverride
