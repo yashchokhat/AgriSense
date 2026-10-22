@@ -14,31 +14,35 @@ class RecommendationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color cardColor;
+    Color cardBg;
     Color accentColor;
     IconData icon;
 
     if (recommendation.irrigationNeeded == true) {
       if (recommendation.urgency == 'CRITICAL') {
-        cardColor = const Color(0xFFFEF2F2);
+        cardBg = const Color(0xFFFEF2F2);
         accentColor = AppColors.critical;
         icon = Icons.water_drop_rounded;
       } else {
-        cardColor = const Color(0xFFFFFBEB);
+        cardBg = const Color(0xFFFFFBEB);
         accentColor = AppColors.warning;
         icon = Icons.water_drop_outlined;
       }
     } else {
-      cardColor = const Color(0xFFF0FDF4);
+      cardBg = const Color(0xFFF0FDF4);
       accentColor = AppColors.online;
       icon = Icons.check_circle_outline_rounded;
     }
 
+    final confidencePct = recommendation.confidence != null
+        ? (recommendation.confidence! * 100.0).clamp(0.0, 100.0)
+        : null;
+
     return Card(
-      color: cardColor,
+      color: cardBg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: accentColor.withOpacity(0.25), width: 1),
+        side: BorderSide(color: accentColor.withValues(alpha: 0.3), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(18.0),
@@ -47,7 +51,7 @@ class RecommendationCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: accentColor, size: 22),
+                Icon(icon, color: accentColor, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -55,7 +59,7 @@ class RecommendationCard extends StatelessWidget {
                     style: TextStyle(
                       color: accentColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -64,14 +68,14 @@ class RecommendationCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: accentColor.withOpacity(0.3)),
+                    border: Border.all(color: accentColor.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        recommendation.isMlBased ? Icons.auto_awesome : Icons.rule,
-                        size: 12,
+                        recommendation.isMlBased ? Icons.analytics_outlined : Icons.rule_rounded,
+                        size: 11,
                         color: accentColor,
                       ),
                       const SizedBox(width: 4),
@@ -81,6 +85,7 @@ class RecommendationCard extends StatelessWidget {
                           color: accentColor,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
+                          letterSpacing: 0.4,
                         ),
                       ),
                     ],
@@ -97,37 +102,67 @@ class RecommendationCard extends StatelessWidget {
                 height: 1.35,
               ),
             ),
-            if (recommendation.confidence != null) ...[
-              const SizedBox(height: 10),
-              Row(
+            if (confidencePct != null) ...[
+              const SizedBox(height: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Prediction Confidence: ${(recommendation.confidence! * 100).toStringAsFixed(1)}%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: accentColor,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Model Confidence',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      Text(
+                        '${confidencePct.toStringAsFixed(1)}%',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: confidencePct / 100.0,
+                      minHeight: 4.5,
+                      backgroundColor: Colors.black.withValues(alpha: 0.05),
+                      valueColor: AlwaysStoppedAnimation<Color>(accentColor),
                     ),
                   ),
-                  const Spacer(),
-                  if (onTapInsights != null)
-                    InkWell(
-                      onTap: onTapInsights,
-                      child: Row(
-                        children: [
-                          Text(
-                            'View Insights',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: accentColor,
-                            ),
-                          ),
-                          Icon(Icons.chevron_right_rounded, size: 16, color: accentColor),
-                        ],
-                      ),
-                    ),
                 ],
+              ),
+            ],
+            if (onTapInsights != null) ...[
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  onTap: onTapInsights,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Detailed Factors',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Icon(Icons.arrow_forward_rounded, size: 14, color: accentColor),
+                    ],
+                  ),
+                ),
               ),
             ],
           ],

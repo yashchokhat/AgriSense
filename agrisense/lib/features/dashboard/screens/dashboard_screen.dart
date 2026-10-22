@@ -133,9 +133,9 @@ class DashboardScreen extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.critical.withOpacity(0.1),
+                        color: AppColors.critical.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.critical.withOpacity(0.3)),
+                        border: Border.all(color: AppColors.critical.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [

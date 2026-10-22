@@ -51,8 +51,9 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      expect(find.text('Soil Moisture Level'), findsOneWidget);
+      expect(find.text('Soil Moisture Status'), findsOneWidget);
       expect(find.text('45%'), findsOneWidget);
       expect(find.text('OPTIMAL'), findsOneWidget);
       expect(find.text('2900 / 4095'), findsOneWidget);
@@ -80,10 +81,10 @@ void main() {
       expect(find.text('Irrigation Needed'), findsOneWidget);
       expect(find.text('Active moisture deficit detected.'), findsOneWidget);
       expect(find.text('ML MODEL'), findsOneWidget);
-      expect(find.text('Prediction Confidence: 98.0%'), findsOneWidget);
+      expect(find.text('98.0%'), findsOneWidget);
     });
 
-    testWidgets('ConnectivityBanner displays LIVE STREAM for online device', (WidgetTester tester) async {
+    testWidgets('ConnectivityBanner displays LIVE TELEMETRY for online device', (WidgetTester tester) async {
       final device = DeviceStatus(
         deviceId: 'ESP32_AGRISENSE_01',
         isOnline: true,
@@ -101,7 +102,7 @@ void main() {
         ),
       );
 
-      expect(find.text('LIVE STREAM'), findsOneWidget);
+      expect(find.text('LIVE TELEMETRY'), findsOneWidget);
       expect(find.text('-70 dBm'), findsOneWidget);
     });
 

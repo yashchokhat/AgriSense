@@ -13,7 +13,7 @@ class AiInsightsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI & Agronomic Insights'),
+        title: const Text('Irrigation Intelligence'),
       ),
       body: Consumer2<SensorProvider, SettingsProvider>(
         builder: (context, sensorProv, settingsProv, child) {
@@ -30,10 +30,10 @@ class AiInsightsScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.psychology_outlined, size: 64, color: AppColors.textMuted),
+                    const Icon(Icons.assessment_outlined, size: 56, color: AppColors.textMuted),
                     const SizedBox(height: 16),
                     Text(
-                      'AI Model Analysis Unavailable',
+                      'Irrigation Analysis Unavailable',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -66,6 +66,10 @@ class AiInsightsScreen extends StatelessWidget {
               ? DateFormat('MMM dd, yyyy · HH:mm:ss').format(rec.timestamp!.toLocal())
               : 'Recent';
 
+          final confidenceVal = rec.confidence != null
+              ? (rec.confidence! * 100.0).clamp(0.0, 100.0)
+              : null;
+
           return RefreshIndicator(
             color: AppColors.primary,
             onRefresh: () => sensorProv.fetchDashboard(),
@@ -75,10 +79,10 @@ class AiInsightsScreen extends StatelessWidget {
               children: [
                 // 1. Primary Recommendation Hero Card
                 Card(
-                  color: bannerColor.withOpacity(0.06),
+                  color: bannerColor.withValues(alpha: 0.05),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: bannerColor.withOpacity(0.3), width: 1.2),
+                    side: BorderSide(color: bannerColor.withValues(alpha: 0.3), width: 1.2),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -90,7 +94,7 @@ class AiInsightsScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: bannerColor.withOpacity(0.15),
+                                color: bannerColor.withValues(alpha: 0.12),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -109,12 +113,12 @@ class AiInsightsScreen extends StatelessWidget {
                                     style: TextStyle(
                                       color: bannerColor,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                      fontSize: 15,
                                     ),
                                   ),
                                   Text(
-                                    'Generated at $timeStr',
-                                    style: TextStyle(
+                                    'Evaluated at $timeStr',
+                                    style: const TextStyle(
                                       color: AppColors.textMuted,
                                       fontSize: 11,
                                     ),
@@ -128,7 +132,7 @@ class AiInsightsScreen extends StatelessWidget {
                         Text(
                           rec.message,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             color: AppColors.textPrimary,
                             height: 1.4,
                           ),
@@ -141,8 +145,8 @@ class AiInsightsScreen extends StatelessWidget {
                           runSpacing: 8,
                           children: [
                             _badge(
-                              icon: isMl ? Icons.auto_awesome : Icons.rule_rounded,
-                              label: isMl ? 'ML Random Forest' : 'Agronomic Rules',
+                              icon: isMl ? Icons.model_training_rounded : Icons.rule_rounded,
+                              label: isMl ? 'Random Forest Model' : 'FAO-56 Agronomic Rules',
                               color: AppColors.primary,
                             ),
                             _badge(
@@ -150,10 +154,10 @@ class AiInsightsScreen extends StatelessWidget {
                               label: 'Urgency: ${rec.urgency}',
                               color: bannerColor,
                             ),
-                            if (rec.confidence != null)
+                            if (confidenceVal != null)
                               _badge(
-                                icon: Icons.speed_rounded,
-                                label: 'Confidence: ${(rec.confidence! * 100).toStringAsFixed(1)}%',
+                                icon: Icons.straighten_rounded,
+                                label: 'Confidence: ${confidenceVal.toStringAsFixed(1)}%',
                                 color: AppColors.primaryLight,
                               ),
                           ],
@@ -232,7 +236,7 @@ class AiInsightsScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Features Input to Model',
+                                'Telemetry Features Input to Pipeline',
                                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -252,9 +256,9 @@ class AiInsightsScreen extends StatelessWidget {
                           const Divider(height: 14),
                           _featureRow('Vapor Pressure Deficit (VPD)', '${rec.featuresUsed["vpd_kpa"] ?? "--"} kPa'),
                           const Divider(height: 14),
-                          _featureRow('Crop Context', '${rec.featuresUsed["crop_type"] ?? "general"}'.toUpperCase()),
+                          _featureRow('Crop Variety Context', '${rec.featuresUsed["crop_type"] ?? "general"}'.toUpperCase()),
                           const Divider(height: 14),
-                          _featureRow('Soil Context', '${rec.featuresUsed["soil_type"] ?? "loam"}'.toUpperCase()),
+                          _featureRow('Soil Texture Context', '${rec.featuresUsed["soil_type"] ?? "loam"}'.toUpperCase()),
                         ],
                       ),
                     ),
@@ -273,11 +277,11 @@ class AiInsightsScreen extends StatelessWidget {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Icon(Icons.bolt_rounded),
+                      : const Icon(Icons.refresh_rounded, size: 18),
                   label: Text(
                     sensorProv.isRunningInference
-                        ? 'Running Inference Pipeline...'
-                        : 'Re-run Inference with Current Telemetry',
+                        ? 'Running Model Inference...'
+                        : 'Re-evaluate with Current Telemetry',
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -293,14 +297,14 @@ class AiInsightsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: color),
+          Icon(icon, size: 13, color: color),
           const SizedBox(width: 5),
           Text(
             label,

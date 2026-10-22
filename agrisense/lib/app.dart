@@ -93,9 +93,9 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             label: 'Analytics',
           ),
           NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome_rounded),
-            label: 'AI Insights',
+            icon: Icon(Icons.water_drop_outlined),
+            selectedIcon: Icon(Icons.water_drop_rounded),
+            label: 'Irrigation',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
