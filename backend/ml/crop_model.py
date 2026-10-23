@@ -16,6 +16,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Rice (Paddy)",
         "ideal_temp": (20.0, 35.0),
         "ideal_humidity": (70.0, 95.0),
+        "ideal_moisture": (65.0, 95.0),
         "ideal_ph": (5.5, 7.0),
         "ideal_rainfall": (150.0, 300.0),
         "ideal_soil": "Clayey / Loamy",
@@ -26,6 +27,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Maize (Corn)",
         "ideal_temp": (18.0, 30.0),
         "ideal_humidity": (50.0, 75.0),
+        "ideal_moisture": (45.0, 75.0),
         "ideal_ph": (5.8, 7.5),
         "ideal_rainfall": (60.0, 110.0),
         "ideal_soil": "Well-drained Loamy / Sandy Loam",
@@ -36,6 +38,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Chickpea (Gram)",
         "ideal_temp": (15.0, 25.0),
         "ideal_humidity": (40.0, 65.0),
+        "ideal_moisture": (25.0, 50.0),
         "ideal_ph": (6.0, 8.0),
         "ideal_rainfall": (40.0, 90.0),
         "ideal_soil": "Sandy Loam / Clay Loam",
@@ -46,6 +49,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Kidney Beans (Rajma)",
         "ideal_temp": (15.0, 25.0),
         "ideal_humidity": (50.0, 70.0),
+        "ideal_moisture": (40.0, 65.0),
         "ideal_ph": (5.5, 6.8),
         "ideal_rainfall": (60.0, 150.0),
         "ideal_soil": "Rich Loam with good drainage",
@@ -56,6 +60,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Pigeon Peas (Arhar / Tur)",
         "ideal_temp": (20.0, 35.0),
         "ideal_humidity": (45.0, 75.0),
+        "ideal_moisture": (35.0, 60.0),
         "ideal_ph": (6.0, 7.5),
         "ideal_rainfall": (60.0, 120.0),
         "ideal_soil": "Deep Loamy / Black Cotton",
@@ -66,6 +71,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Moth Beans",
         "ideal_temp": (24.0, 35.0),
         "ideal_humidity": (30.0, 65.0),
+        "ideal_moisture": (20.0, 45.0),
         "ideal_ph": (5.5, 7.5),
         "ideal_rainfall": (30.0, 75.0),
         "ideal_soil": "Sandy / Arid",
@@ -76,6 +82,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Mung Bean (Green Gram)",
         "ideal_temp": (25.0, 35.0),
         "ideal_humidity": (60.0, 80.0),
+        "ideal_moisture": (35.0, 60.0),
         "ideal_ph": (6.2, 7.5),
         "ideal_rainfall": (50.0, 90.0),
         "ideal_soil": "Well-drained Loam / Sandy Loam",
@@ -86,6 +93,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Black Gram (Urad)",
         "ideal_temp": (25.0, 35.0),
         "ideal_humidity": (60.0, 80.0),
+        "ideal_moisture": (40.0, 65.0),
         "ideal_ph": (6.5, 7.8),
         "ideal_rainfall": (60.0, 100.0),
         "ideal_soil": "Heavy Loam / Clay",
@@ -96,6 +104,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Lentil (Masoor)",
         "ideal_temp": (15.0, 25.0),
         "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (25.0, 50.0),
         "ideal_ph": (5.5, 7.5),
         "ideal_rainfall": (40.0, 80.0),
         "ideal_soil": "Alluvial / Clay Loam",
@@ -106,6 +115,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Pomegranate",
         "ideal_temp": (18.0, 35.0),
         "ideal_humidity": (30.0, 60.0),
+        "ideal_moisture": (30.0, 55.0),
         "ideal_ph": (6.0, 7.5),
         "ideal_rainfall": (50.0, 120.0),
         "ideal_soil": "Deep Sandy Loam / Loam",
@@ -116,6 +126,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Banana",
         "ideal_temp": (22.0, 36.0),
         "ideal_humidity": (75.0, 95.0),
+        "ideal_moisture": (60.0, 85.0),
         "ideal_ph": (6.0, 7.5),
         "ideal_rainfall": (100.0, 200.0),
         "ideal_soil": "Deep, nutrient-rich fertile Loam",
@@ -126,6 +137,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Mango",
         "ideal_temp": (24.0, 38.0),
         "ideal_humidity": (45.0, 75.0),
+        "ideal_moisture": (35.0, 60.0),
         "ideal_ph": (5.5, 7.5),
         "ideal_rainfall": (75.0, 150.0),
         "ideal_soil": "Well-drained deep Alluvial / Laterite",
@@ -136,6 +148,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Grapes",
         "ideal_temp": (15.0, 35.0),
         "ideal_humidity": (40.0, 75.0),
+        "ideal_moisture": (30.0, 55.0),
         "ideal_ph": (6.5, 8.0),
         "ideal_rainfall": (50.0, 90.0),
         "ideal_soil": "Gravelly / Sandy Loam with caliche drainage",
@@ -146,6 +159,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Watermelon",
         "ideal_temp": (24.0, 35.0),
         "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (30.0, 55.0),
         "ideal_ph": (6.0, 7.0),
         "ideal_rainfall": (40.0, 80.0),
         "ideal_soil": "Sandy / Sandy Loam",
@@ -156,6 +170,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Muskmelon",
         "ideal_temp": (24.0, 35.0),
         "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (30.0, 55.0),
         "ideal_ph": (6.0, 7.2),
         "ideal_rainfall": (40.0, 70.0),
         "ideal_soil": "Well-drained Sandy Loam",
@@ -166,6 +181,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Apple",
         "ideal_temp": (10.0, 24.0),
         "ideal_humidity": (55.0, 80.0),
+        "ideal_moisture": (45.0, 70.0),
         "ideal_ph": (5.5, 6.8),
         "ideal_rainfall": (90.0, 140.0),
         "ideal_soil": "Well-drained Loamy with high organic matter",
@@ -176,6 +192,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Orange (Citrus)",
         "ideal_temp": (15.0, 35.0),
         "ideal_humidity": (50.0, 75.0),
+        "ideal_moisture": (40.0, 65.0),
         "ideal_ph": (5.5, 7.5),
         "ideal_rainfall": (75.0, 130.0),
         "ideal_soil": "Well-drained Light Loam",
@@ -186,6 +203,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Papaya",
         "ideal_temp": (22.0, 35.0),
         "ideal_humidity": (60.0, 85.0),
+        "ideal_moisture": (50.0, 75.0),
         "ideal_ph": (6.0, 7.0),
         "ideal_rainfall": (90.0, 180.0),
         "ideal_soil": "Rich Sandy Loam with excellent drainage",
@@ -196,6 +214,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Coconut",
         "ideal_temp": (25.0, 35.0),
         "ideal_humidity": (70.0, 95.0),
+        "ideal_moisture": (55.0, 80.0),
         "ideal_ph": (5.2, 8.0),
         "ideal_rainfall": (130.0, 250.0),
         "ideal_soil": "Coastal Sand / Alluvial / Red Loam",
@@ -206,6 +225,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Cotton",
         "ideal_temp": (21.0, 35.0),
         "ideal_humidity": (50.0, 75.0),
+        "ideal_moisture": (40.0, 65.0),
         "ideal_ph": (6.0, 8.0),
         "ideal_rainfall": (60.0, 110.0),
         "ideal_soil": "Deep Black Cotton (Regur) / Alluvial",
@@ -216,6 +236,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Jute",
         "ideal_temp": (24.0, 37.0),
         "ideal_humidity": (70.0, 95.0),
+        "ideal_moisture": (65.0, 90.0),
         "ideal_ph": (6.0, 7.5),
         "ideal_rainfall": (150.0, 260.0),
         "ideal_soil": "Alluvial / Loamy Clay",
@@ -226,6 +247,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "display_name": "Coffee",
         "ideal_temp": (18.0, 28.0),
         "ideal_humidity": (65.0, 85.0),
+        "ideal_moisture": (50.0, 75.0),
         "ideal_ph": (5.5, 6.5),
         "ideal_rainfall": (120.0, 220.0),
         "ideal_soil": "Rich volcanic / Forest Humus Loam",
@@ -308,6 +330,7 @@ class CropPredictor:
         humidity_percent: float,
         ph: float,
         rainfall_mm: float = 100.0,
+        soil_moisture_percent: Optional[float] = None,
     ) -> Dict[str, Any]:
         """
         Predicts the top suited crop and alternatives.
@@ -325,7 +348,7 @@ class CropPredictor:
         if not self.is_loaded or self.model is None:
             # Fallback to nearest heuristic
             return self._fallback_prediction(
-                nitrogen, phosphorus, potassium, temperature_c, humidity_percent, ph, rainfall_mm
+                nitrogen, phosphorus, potassium, temperature_c, humidity_percent, ph, rainfall_mm, soil_moisture_percent
             )
 
         try:
@@ -355,8 +378,20 @@ class CropPredictor:
 
             # Evaluate suitability factors
             factors = self._evaluate_factors(
-                pred_crop, nitrogen, phosphorus, potassium, temperature_c, humidity_percent, ph, rainfall_mm
+                pred_crop, nitrogen, phosphorus, potassium, temperature_c, humidity_percent, ph, rainfall_mm, soil_moisture_percent
             )
+
+            inputs_dict = {
+                "nitrogen": round(float(nitrogen), 1),
+                "phosphorus": round(float(phosphorus), 1),
+                "potassium": round(float(potassium), 1),
+                "temperature_c": round(float(temperature_c), 1),
+                "humidity_percent": round(float(humidity_percent), 1),
+                "ph": round(float(ph), 2),
+                "rainfall_mm": round(float(rainfall_mm), 1),
+            }
+            if soil_moisture_percent is not None:
+                inputs_dict["soil_moisture_percent"] = round(float(soil_moisture_percent), 1)
 
             return {
                 "available": True,
@@ -369,54 +404,80 @@ class CropPredictor:
                 "ideal_soil": profile.get("ideal_soil", "Loamy / Well-drained"),
                 "alternatives": alternatives,
                 "factors_analysis": factors,
-                "inputs": {
-                    "nitrogen": round(float(nitrogen), 1),
-                    "phosphorus": round(float(phosphorus), 1),
-                    "potassium": round(float(potassium), 1),
-                    "temperature_c": round(float(temperature_c), 1),
-                    "humidity_percent": round(float(humidity_percent), 1),
-                    "ph": round(float(ph), 2),
-                    "rainfall_mm": round(float(rainfall_mm), 1),
-                }
+                "inputs": inputs_dict,
             }
         except Exception as e:
             logger.error("Error during crop inference: %s", e)
             return self._fallback_prediction(
-                nitrogen, phosphorus, potassium, temperature_c, humidity_percent, ph, rainfall_mm
+                nitrogen, phosphorus, potassium, temperature_c, humidity_percent, ph, rainfall_mm, soil_moisture_percent
             )
 
     def _evaluate_factors(
         self,
         crop: str,
-        n: float, p: float, k: float, temp: float, hum: float, ph: float, rain: float
+        n: float,
+        p: float,
+        k: float,
+        temp: float,
+        hum: float,
+        ph: float,
+        rain: float,
+        moisture: Optional[float] = None,
     ) -> List[Dict[str, Any]]:
         """Generates detailed farmer-friendly factor ratings."""
         profile = CROP_PROFILES.get(crop, {})
         factors = []
 
-        # Temperature
+        # 1. Soil Moisture (Live ESP32 sensor)
+        if moisture is not None:
+            m_min, m_max = profile.get("ideal_moisture", (40.0, 75.0))
+            m_ok = m_min <= moisture <= m_max
+            m_status = "OPTIMAL" if m_ok else ("HIGH" if moisture > m_max else "LOW")
+            factors.append({
+                "parameter": "Soil Moisture",
+                "current": f"{moisture:.1f} %",
+                "ideal_range": f"{m_min:.0f} - {m_max:.0f} %",
+                "status": m_status,
+                "is_favorable": m_ok,
+                "current_num": round(float(moisture), 1),
+                "ideal_min": float(m_min),
+                "ideal_max": float(m_max),
+                "unit": "%",
+            })
+
+        # 2. Temperature (Live DHT11 sensor)
         t_min, t_max = profile.get("ideal_temp", (18.0, 32.0))
         t_ok = t_min <= temp <= t_max
+        t_status = "OPTIMAL" if t_ok else ("HIGH" if temp > t_max else "LOW")
         factors.append({
             "parameter": "Temperature",
             "current": f"{temp:.1f} °C",
             "ideal_range": f"{t_min:.0f} - {t_max:.0f} °C",
-            "status": "OPTIMAL" if t_ok else ("HIGH" if temp > t_max else "LOW"),
+            "status": t_status,
             "is_favorable": t_ok,
+            "current_num": round(float(temp), 1),
+            "ideal_min": float(t_min),
+            "ideal_max": float(t_max),
+            "unit": "°C",
         })
 
-        # Humidity
+        # 3. Relative Humidity (Live DHT11 sensor)
         h_min, h_max = profile.get("ideal_humidity", (50.0, 80.0))
         h_ok = h_min <= hum <= h_max
+        h_status = "OPTIMAL" if h_ok else ("HIGH" if hum > h_max else "LOW")
         factors.append({
             "parameter": "Relative Humidity",
             "current": f"{hum:.1f} %",
             "ideal_range": f"{h_min:.0f} - {h_max:.0f} %",
-            "status": "OPTIMAL" if h_ok else ("HIGH" if hum > h_max else "LOW"),
+            "status": h_status,
             "is_favorable": h_ok,
+            "current_num": round(float(hum), 1),
+            "ideal_min": float(h_min),
+            "ideal_max": float(h_max),
+            "unit": "%",
         })
 
-        # Soil pH
+        # 4. Soil pH
         ph_min, ph_max = profile.get("ideal_ph", (6.0, 7.5))
         ph_ok = ph_min <= ph <= ph_max
         factors.append({
@@ -425,9 +486,13 @@ class CropPredictor:
             "ideal_range": f"{ph_min:.1f} - {ph_max:.1f}",
             "status": "OPTIMAL" if ph_ok else ("ALKALINE" if ph > ph_max else "ACIDIC"),
             "is_favorable": ph_ok,
+            "current_num": round(float(ph), 2),
+            "ideal_min": float(ph_min),
+            "ideal_max": float(ph_max),
+            "unit": "",
         })
 
-        # Soil Nutrients
+        # 5. Soil Nutrients
         n_status = "ADEQUATE" if n >= 40 else ("LOW" if n < 25 else "MODERATE")
         factors.append({
             "parameter": "Soil Nitrogen (N)",
@@ -435,12 +500,24 @@ class CropPredictor:
             "ideal_range": "> 40 kg/ha",
             "status": n_status,
             "is_favorable": n >= 30,
+            "current_num": round(float(n), 1),
+            "ideal_min": 35.0,
+            "ideal_max": 140.0,
+            "unit": "kg/ha",
         })
 
         return factors
 
     def _fallback_prediction(
-        self, n: float, p: float, k: float, temp: float, hum: float, ph: float, rain: float
+        self,
+        n: float,
+        p: float,
+        k: float,
+        temp: float,
+        hum: float,
+        ph: float,
+        rain: float,
+        moisture: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Agronomic rule-based fallback when ML artifact is uninitialized."""
         if temp > 22 and hum > 70 and rain > 150:
@@ -463,7 +540,7 @@ class CropPredictor:
             "farmer_tip": profile.get("farmer_tip", "Ensure balanced basal fertilizer application."),
             "ideal_soil": profile.get("ideal_soil", "Loamy"),
             "alternatives": [],
-            "factors_analysis": self._evaluate_factors(pred, n, p, k, temp, hum, ph, rain),
+            "factors_analysis": self._evaluate_factors(pred, n, p, k, temp, hum, ph, rain, moisture),
             "inputs": {
                 "nitrogen": round(float(n), 1),
                 "phosphorus": round(float(p), 1),

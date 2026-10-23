@@ -174,15 +174,23 @@ class DashboardScreen extends StatelessWidget {
 
                 // Crop & Fertilizer Advisory Quick Card (Kaggle ML Models)
                 if (data.agronomy != null) ...[
-                  Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: Colors.green.shade200),
-                    ),
-                    color: Colors.green.shade50.withAlpha(80),
-                    child: Padding(
+                  InkWell(
+                    onTap: onNavigateToAgronomy,
+                    borderRadius: BorderRadius.circular(18),
+                    child: Container(
                       padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(10),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                        border: Border.all(color: Colors.green.shade200, width: 1.5),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -191,79 +199,112 @@ class DashboardScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.green.shade100,
+                                  color: const Color(0xFFECFDF5),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Icon(Icons.eco_rounded, color: Colors.green.shade800, size: 18),
+                                child: const Icon(Icons.psychology_rounded, color: Color(0xFF059669), size: 18),
                               ),
                               const SizedBox(width: 8),
                               const Text(
-                                'Crop & Fertilizer ML Advisory',
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                'Crop & Fertilizer ML Engine',
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                               ),
                               const Spacer(),
-                              TextButton.icon(
-                                onPressed: onNavigateToAgronomy,
-                                icon: const Icon(Icons.arrow_forward_rounded, size: 14),
-                                label: const Text('Details', style: TextStyle(fontSize: 12)),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  visualDensity: VisualDensity.compact,
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withAlpha(20),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'View Graphs',
+                                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Icon(Icons.arrow_forward_ios_rounded, size: 10, color: AppColors.primary),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           Row(
                             children: [
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xFFF0FDF4),
+                                    borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: Colors.green.shade100),
                                   ),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text('BEST CROP', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.textMuted)),
-                                      const SizedBox(height: 2),
+                                      const Text(
+                                        'BEST CROP FOR SOIL',
+                                        style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF15803D), letterSpacing: 0.5),
+                                      ),
+                                      const SizedBox(height: 4),
                                       Text(
                                         data.agronomy!.cropRecommendation.displayName,
-                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.green),
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      Text(
-                                        '${data.agronomy!.cropRecommendation.suitabilityPercent.toStringAsFixed(0)}% Match',
-                                        style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(4),
+                                              child: LinearProgressIndicator(
+                                                value: (data.agronomy!.cropRecommendation.suitabilityPercent / 100.0).clamp(0.05, 1.0),
+                                                minHeight: 4,
+                                                backgroundColor: Colors.green.shade100,
+                                                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            '${data.agronomy!.cropRecommendation.suitabilityPercent.toStringAsFixed(0)}%',
+                                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF047857)),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xFFFFFBEB),
+                                    borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: Colors.amber.shade100),
                                   ),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text('FERTILIZER', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.textMuted)),
-                                      const SizedBox(height: 2),
+                                      const Text(
+                                        'RECOMMENDED FERTILIZER',
+                                        style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFFB45309), letterSpacing: 0.5),
+                                      ),
+                                      const SizedBox(height: 4),
                                       Text(
                                         data.agronomy!.fertilizerRecommendation.displayName,
-                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.orange.shade800),
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                                         overflow: TextOverflow.ellipsis,
                                       ),
+                                      const SizedBox(height: 4),
                                       Text(
                                         data.agronomy!.fertilizerRecommendation.recommendedDosage,
-                                        style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+                                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ],

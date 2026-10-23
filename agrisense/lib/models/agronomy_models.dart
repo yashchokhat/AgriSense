@@ -87,6 +87,10 @@ class FactorAnalysis {
   final String idealRange;
   final String status;
   final bool isFavorable;
+  final double? currentNum;
+  final double? idealMin;
+  final double? idealMax;
+  final String? unit;
 
   const FactorAnalysis({
     required this.parameter,
@@ -94,6 +98,10 @@ class FactorAnalysis {
     required this.idealRange,
     required this.status,
     required this.isFavorable,
+    this.currentNum,
+    this.idealMin,
+    this.idealMax,
+    this.unit,
   });
 
   factory FactorAnalysis.fromJson(Map<String, dynamic> json) {
@@ -103,6 +111,10 @@ class FactorAnalysis {
       idealRange: json['ideal_range'] as String? ?? '',
       status: json['status'] as String? ?? 'OPTIMAL',
       isFavorable: json['is_favorable'] as bool? ?? true,
+      currentNum: (json['current_num'] as num?)?.toDouble(),
+      idealMin: (json['ideal_min'] as num?)?.toDouble(),
+      idealMax: (json['ideal_max'] as num?)?.toDouble(),
+      unit: json['unit'] as String?,
     );
   }
 }

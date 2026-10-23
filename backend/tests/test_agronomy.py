@@ -59,6 +59,7 @@ def test_agronomy_service_defaults_and_updates():
     crop_p = CropPredictor(model_path="backend/ml/models/crop_model.joblib")
     fert_p = FertilizerPredictor(model_path="backend/ml/models/fertilizer_model.joblib")
     service = AgronomyService(crop_p, fert_p)
+    service.reset_soil_profile()
 
     defaults = service.get_soil_profile()
     assert defaults["nitrogen"] == 50.0
@@ -85,6 +86,9 @@ def test_agronomy_service_defaults_and_updates():
 
 
 def test_agronomy_api_endpoints(client):
+    if hasattr(client.application, "agronomy_service"):
+        client.application.agronomy_service.reset_soil_profile()
+
     # 1. Soil Profile GET
     res = client.get("/api/v1/recommendations/soil-profile")
     assert res.status_code == 200

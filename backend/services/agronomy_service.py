@@ -138,11 +138,18 @@ class AgronomyService:
         phosphorus = float(overrides.get("phosphorus", active_profile["phosphorus"]))
         potassium = float(overrides.get("potassium", active_profile["potassium"]))
         ph = float(overrides.get("ph", active_profile["ph"]))
-        rainfall = float(overrides.get("rainfall_mm", active_profile["rainfall_mm"]))
         soil_type = str(overrides.get("soil_type", active_profile["soil_type"]))
         target_crop = str(overrides.get("target_crop", active_profile["target_crop"]))
 
-        # 3. Predict Crop
+        # Derive effective water availability from live ESP32 soil moisture if rainfall not manually entered
+        if "rainfall_mm" in overrides:
+            rainfall = float(overrides["rainfall_mm"])
+        elif active_profile.get("is_manually_entered") and "rainfall_mm" in active_profile:
+            rainfall = float(active_profile["rainfall_mm"])
+        else:
+            rainfall = 30.0 + (moisture / 100.0) * 230.0
+
+        # 3. Predict Crop (driven by live moisture, temp, humidity + soil test nutrients)
         crop_result = self.crop_predictor.predict(
             nitrogen=nitrogen,
             phosphorus=phosphorus,
@@ -151,6 +158,7 @@ class AgronomyService:
             humidity_percent=humidity,
             ph=ph,
             rainfall_mm=rainfall,
+            soil_moisture_percent=moisture,
         )
 
         # For fertilizer recommendation, use predicted best crop if target crop is default or unspecified

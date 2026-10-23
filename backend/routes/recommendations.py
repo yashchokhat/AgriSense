@@ -98,6 +98,18 @@ def predict_crop():
 
     temp = float(body.get("temperature_c", calibrated.get("temperature_c", 28.0)))
     hum = float(body.get("humidity_percent", calibrated.get("humidity_percent", 60.0)))
+    moist_val = body.get("soil_moisture_estimate_percent", body.get("moisture_percent", calibrated.get("soil_moisture_estimate_percent")))
+    moist = float(moist_val) if moist_val is not None else None
+
+    # If rainfall not explicitly given, derive from soil moisture if available
+    if "rainfall_mm" in body:
+        rain = float(body["rainfall_mm"])
+    elif soil_profile.get("is_manually_entered") and "rainfall_mm" in soil_profile:
+        rain = float(soil_profile["rainfall_mm"])
+    elif moist is not None:
+        rain = 30.0 + (moist / 100.0) * 230.0
+    else:
+        rain = float(soil_profile.get("rainfall_mm", 100.0))
 
     result = crop_predictor.predict(
         nitrogen=n,
@@ -107,6 +119,7 @@ def predict_crop():
         humidity_percent=hum,
         ph=ph,
         rainfall_mm=rain,
+        soil_moisture_percent=moist,
     )
     return api_response(data=result, success=True)
 
