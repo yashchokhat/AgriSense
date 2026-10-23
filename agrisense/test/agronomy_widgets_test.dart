@@ -7,6 +7,7 @@ import 'package:agrisense/features/agronomy/widgets/environmental_match_chart.da
 import 'package:agrisense/features/agronomy/widgets/fertilizer_action_card.dart';
 import 'package:agrisense/features/agronomy/widgets/soil_test_quick_bar.dart';
 import 'package:agrisense/features/agronomy/widgets/crop_alternatives_chart.dart';
+import 'package:agrisense/core/utils/crop_visuals.dart';
 
 void main() {
   group('Agronomy Custom Widgets Tests', () {
@@ -54,7 +55,7 @@ void main() {
         ),
       );
 
-      expect(find.text('TOP ML CROP RECOMMENDATION'), findsOneWidget);
+      expect(find.textContaining('TOP ML RECOMMENDATION'), findsOneWidget);
       expect(find.text('Coffee'), findsOneWidget);
       expect(find.text('88%'), findsOneWidget);
       expect(find.text('Provide canopy shade trees to buffer heat.'), findsOneWidget);
@@ -196,11 +197,25 @@ void main() {
         ),
       );
 
-      expect(find.text('Alternative Crop Options'), findsOneWidget);
+      expect(find.text('Alternative Viable Crops'), findsOneWidget);
       expect(find.text('Jute'), findsOneWidget);
       expect(find.text('25.0% Match'), findsOneWidget);
       expect(find.text('Rice (Paddy)'), findsOneWidget);
       expect(find.text('20.0% Match'), findsOneWidget);
+    });
+
+    test('CropVisuals helper maps categories, emojis, and icons correctly', () {
+      expect(CropVisuals.getCategoryEmoji('Fruit'), '🍎');
+      expect(CropVisuals.getCategoryEmoji('Cereal & Grain'), '🌾');
+      expect(CropVisuals.getCategoryEmoji('Pulse & Legume'), '🌱');
+      expect(CropVisuals.getCategoryEmoji('Cash Crop / Commercial'), '🪴');
+      expect(CropVisuals.getCategoryEmoji('Vegetable & Spice'), '🥕');
+      expect(CropVisuals.getCategoryEmoji('Oilseed'), '🌻');
+
+      expect(CropVisuals.getCropIcon('wheat'), Icons.grain_rounded);
+      expect(CropVisuals.getCropIcon('strawberry'), Icons.favorite_rounded);
+      expect(CropVisuals.getCropIcon('sugarcane'), Icons.forest_rounded);
+      expect(CropVisuals.getCropIcon('tomato'), Icons.lens_rounded);
     });
   });
 }

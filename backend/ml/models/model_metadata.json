@@ -1,6 +1,6 @@
 {
   "system": "AgriSense Precision Agronomy & IoT Suite",
-  "updated_at": "2026-10-23T21:18:39.080349+00:00",
+  "updated_at": "2026-10-23T22:03:02.742902+00:00",
   "models": {
     "irrigation": {
       "model_type": "RandomForestClassifier",
@@ -13,7 +13,7 @@
       "model_type": "RandomForestClassifier",
       "model_version": "v1.0.0-rf-crop",
       "path": "/Users/yash/Desktop/AgriSense/backend/ml/models/crop_model.joblib",
-      "accuracy": 0.9955,
+      "accuracy": 0.9786,
       "classes_count": 22
     },
     "fertilizer_recommendation": {

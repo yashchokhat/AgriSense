@@ -12,8 +12,10 @@ from sklearn.metrics import accuracy_score
 logger = logging.getLogger("agrisense.ml.crop")
 
 CROP_PROFILES: Dict[str, Dict[str, Any]] = {
+    # Cereals & Grains
     "rice": {
         "display_name": "Rice (Paddy)",
+        "category": "Cereal & Grain",
         "ideal_temp": (20.0, 35.0),
         "ideal_humidity": (70.0, 95.0),
         "ideal_moisture": (65.0, 95.0),
@@ -23,8 +25,33 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "description": "High water and moisture requirement with submerged or saturated soil conditions.",
         "farmer_tip": "Maintain 2-5 cm standing water during tillering to panicle initiation. Ensure balanced N split doses."
     },
+    "wheat": {
+        "display_name": "Wheat",
+        "category": "Cereal & Grain",
+        "ideal_temp": (12.0, 25.0),
+        "ideal_humidity": (50.0, 70.0),
+        "ideal_moisture": (40.0, 65.0),
+        "ideal_ph": (6.0, 7.5),
+        "ideal_rainfall": (50.0, 100.0),
+        "ideal_soil": "Well-drained fertile Loam / Clay Loam",
+        "description": "Premier rabi staple cereal thriving in cool vegetative weather and warm sunny grain filling.",
+        "farmer_tip": "Provide crown root initiation (CRI) irrigation 21 days after sowing. Top-dress Urea at first irrigation."
+    },
+    "barley": {
+        "display_name": "Barley",
+        "category": "Cereal & Grain",
+        "ideal_temp": (12.0, 22.0),
+        "ideal_humidity": (35.0, 60.0),
+        "ideal_moisture": (30.0, 55.0),
+        "ideal_ph": (6.5, 8.2),
+        "ideal_rainfall": (35.0, 75.0),
+        "ideal_soil": "Sandy Loam / Light Clay with alkaline tolerance",
+        "description": "Hardy cereal highly tolerant to salinity, alkalinity, and moisture stress.",
+        "farmer_tip": "Excellent choice for semi-arid saline soils where wheat struggles. Avoid excessive nitrogen lodging."
+    },
     "maize": {
         "display_name": "Maize (Corn)",
+        "category": "Cereal & Grain",
         "ideal_temp": (18.0, 30.0),
         "ideal_humidity": (50.0, 75.0),
         "ideal_moisture": (45.0, 75.0),
@@ -34,8 +61,11 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "description": "Moderately drought tolerant with high nitrogen consumption during knee-high stage.",
         "farmer_tip": "Avoid waterlogging. Apply Nitrogen in 3 splits (basal, knee-high, and tasseling stages)."
     },
+
+    # Pulses & Legumes
     "chickpea": {
         "display_name": "Chickpea (Gram)",
+        "category": "Pulse & Legume",
         "ideal_temp": (15.0, 25.0),
         "ideal_humidity": (40.0, 65.0),
         "ideal_moisture": (25.0, 50.0),
@@ -47,6 +77,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "kidneybeans": {
         "display_name": "Kidney Beans (Rajma)",
+        "category": "Pulse & Legume",
         "ideal_temp": (15.0, 25.0),
         "ideal_humidity": (50.0, 70.0),
         "ideal_moisture": (40.0, 65.0),
@@ -58,6 +89,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "pigeonpeas": {
         "display_name": "Pigeon Peas (Arhar / Tur)",
+        "category": "Pulse & Legume",
         "ideal_temp": (20.0, 35.0),
         "ideal_humidity": (45.0, 75.0),
         "ideal_moisture": (35.0, 60.0),
@@ -69,6 +101,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "mothbeans": {
         "display_name": "Moth Beans",
+        "category": "Pulse & Legume",
         "ideal_temp": (24.0, 35.0),
         "ideal_humidity": (30.0, 65.0),
         "ideal_moisture": (20.0, 45.0),
@@ -80,6 +113,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "mungbean": {
         "display_name": "Mung Bean (Green Gram)",
+        "category": "Pulse & Legume",
         "ideal_temp": (25.0, 35.0),
         "ideal_humidity": (60.0, 80.0),
         "ideal_moisture": (35.0, 60.0),
@@ -91,6 +125,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "blackgram": {
         "display_name": "Black Gram (Urad)",
+        "category": "Pulse & Legume",
         "ideal_temp": (25.0, 35.0),
         "ideal_humidity": (60.0, 80.0),
         "ideal_moisture": (40.0, 65.0),
@@ -102,6 +137,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "lentil": {
         "display_name": "Lentil (Masoor)",
+        "category": "Pulse & Legume",
         "ideal_temp": (15.0, 25.0),
         "ideal_humidity": (45.0, 65.0),
         "ideal_moisture": (25.0, 50.0),
@@ -111,118 +147,61 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "description": "Rabi cool-season legume tolerant to mild frost and dry periods.",
         "farmer_tip": "Provide light irrigation 40 days after sowing. Avoid water stagnation."
     },
-    "pomegranate": {
-        "display_name": "Pomegranate",
-        "ideal_temp": (18.0, 35.0),
-        "ideal_humidity": (30.0, 60.0),
-        "ideal_moisture": (30.0, 55.0),
-        "ideal_ph": (6.0, 7.5),
-        "ideal_rainfall": (50.0, 120.0),
-        "ideal_soil": "Deep Sandy Loam / Loam",
-        "description": "High-value fruit crop adapted to semi-arid climates.",
-        "farmer_tip": "Adopt drip irrigation and regulative bahar treatment for uniform fruit size and color."
-    },
-    "banana": {
-        "display_name": "Banana",
-        "ideal_temp": (22.0, 36.0),
-        "ideal_humidity": (75.0, 95.0),
-        "ideal_moisture": (60.0, 85.0),
-        "ideal_ph": (6.0, 7.5),
-        "ideal_rainfall": (100.0, 200.0),
-        "ideal_soil": "Deep, nutrient-rich fertile Loam",
-        "description": "Heavy feeder of Nitrogen and Potassium requiring warm tropical humid conditions.",
-        "farmer_tip": "Apply high potassium fertilizer during bunch formation and maintain continuous root aeration."
-    },
-    "mango": {
-        "display_name": "Mango",
-        "ideal_temp": (24.0, 38.0),
-        "ideal_humidity": (45.0, 75.0),
-        "ideal_moisture": (35.0, 60.0),
-        "ideal_ph": (5.5, 7.5),
-        "ideal_rainfall": (75.0, 150.0),
-        "ideal_soil": "Well-drained deep Alluvial / Laterite",
-        "description": "Tropical fruit requiring a dry period before flowering for optimum bloom.",
-        "farmer_tip": "Withhold irrigation 2-3 months prior to flowering to encourage reproductive bud differentiation."
-    },
-    "grapes": {
-        "display_name": "Grapes",
-        "ideal_temp": (15.0, 35.0),
-        "ideal_humidity": (40.0, 75.0),
-        "ideal_moisture": (30.0, 55.0),
-        "ideal_ph": (6.5, 8.0),
-        "ideal_rainfall": (50.0, 90.0),
-        "ideal_soil": "Gravelly / Sandy Loam with caliche drainage",
-        "description": "Warm, sunny, dry climate preferred during berry ripening to prevent fungal mildew.",
-        "farmer_tip": "Prune carefully in October and April. Implement drip fertigation with micronutrients."
-    },
-    "watermelon": {
-        "display_name": "Watermelon",
-        "ideal_temp": (24.0, 35.0),
-        "ideal_humidity": (45.0, 65.0),
-        "ideal_moisture": (30.0, 55.0),
-        "ideal_ph": (6.0, 7.0),
-        "ideal_rainfall": (40.0, 80.0),
-        "ideal_soil": "Sandy / Sandy Loam",
-        "description": "Warm, dry sun-loving cucurbit thriving on riverbed and sandy fields.",
-        "farmer_tip": "Mulch soil with plastic to preserve root warmth and reduce fruit rot."
-    },
-    "muskmelon": {
-        "display_name": "Muskmelon",
-        "ideal_temp": (24.0, 35.0),
-        "ideal_humidity": (45.0, 65.0),
-        "ideal_moisture": (30.0, 55.0),
-        "ideal_ph": (6.0, 7.2),
-        "ideal_rainfall": (40.0, 70.0),
-        "ideal_soil": "Well-drained Sandy Loam",
-        "description": "Requires high heat and low humidity during ripening for high sugar brix.",
-        "farmer_tip": "Reduce watering 10 days before harvest to maximize natural sweetness and aroma."
-    },
-    "apple": {
-        "display_name": "Apple",
-        "ideal_temp": (10.0, 24.0),
-        "ideal_humidity": (55.0, 80.0),
-        "ideal_moisture": (45.0, 70.0),
-        "ideal_ph": (5.5, 6.8),
-        "ideal_rainfall": (90.0, 140.0),
-        "ideal_soil": "Well-drained Loamy with high organic matter",
-        "description": "Temperate tree crop requiring winter chilling hours (800-1000 hours < 7°C).",
-        "farmer_tip": "Maintain clean orchard basins and spray calcium chloride to prevent bitter pit."
-    },
-    "orange": {
-        "display_name": "Orange (Citrus)",
-        "ideal_temp": (15.0, 35.0),
-        "ideal_humidity": (50.0, 75.0),
-        "ideal_moisture": (40.0, 65.0),
-        "ideal_ph": (5.5, 7.5),
-        "ideal_rainfall": (75.0, 130.0),
-        "ideal_soil": "Well-drained Light Loam",
-        "description": "Subtropical evergreen citrus requiring well-aerated soil free of high salinity.",
-        "farmer_tip": "Apply zinc and iron micronutrient foliar sprays twice a year to prevent chlorosis."
-    },
-    "papaya": {
-        "display_name": "Papaya",
-        "ideal_temp": (22.0, 35.0),
-        "ideal_humidity": (60.0, 85.0),
+    "soybean": {
+        "display_name": "Soybean",
+        "category": "Pulse & Legume",
+        "ideal_temp": (20.0, 32.0),
+        "ideal_humidity": (60.0, 80.0),
         "ideal_moisture": (50.0, 75.0),
-        "ideal_ph": (6.0, 7.0),
-        "ideal_rainfall": (90.0, 180.0),
-        "ideal_soil": "Rich Sandy Loam with excellent drainage",
-        "description": "Fast-growing tropical herbaceous plant highly intolerant to waterlogging.",
-        "farmer_tip": "Plant on raised mounds to eliminate root stagnation. Protect against papaya ringspot virus."
+        "ideal_ph": (6.0, 7.2),
+        "ideal_rainfall": (65.0, 120.0),
+        "ideal_soil": "Deep fertile Loam with organic matter",
+        "description": "High-protein legume and oilseed crop that enriches soil through biological nitrogen fixation.",
+        "farmer_tip": "Treat seed with Bradyrhizobium culture. Ensure good drainage; avoid waterlogging during germination."
     },
-    "coconut": {
-        "display_name": "Coconut",
-        "ideal_temp": (25.0, 35.0),
-        "ideal_humidity": (70.0, 95.0),
-        "ideal_moisture": (55.0, 80.0),
-        "ideal_ph": (5.2, 8.0),
-        "ideal_rainfall": (130.0, 250.0),
-        "ideal_soil": "Coastal Sand / Alluvial / Red Loam",
-        "description": "Tropical palm flourishing with warm maritime breezes and abundant sunshine.",
-        "farmer_tip": "Apply common salt (NaCl) alongside potassium chloride (MOP) to boost nut set and weight."
+
+    # Oilseeds
+    "groundnut": {
+        "display_name": "Groundnut (Peanut)",
+        "category": "Oilseed",
+        "ideal_temp": (22.0, 34.0),
+        "ideal_humidity": (50.0, 70.0),
+        "ideal_moisture": (35.0, 60.0),
+        "ideal_ph": (5.8, 7.2),
+        "ideal_rainfall": (50.0, 95.0),
+        "ideal_soil": "Well-aerated Sandy Loam / Red Sandy",
+        "description": "Subterranean pod-forming legume requiring light, friable soils for easy peg penetration.",
+        "farmer_tip": "Apply Gypsum (200 kg/acre) at flowering/pegging stage to supply calcium for well-filled pods."
     },
+    "mustard": {
+        "display_name": "Mustard (Rape)",
+        "category": "Oilseed",
+        "ideal_temp": (12.0, 25.0),
+        "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (30.0, 55.0),
+        "ideal_ph": (6.0, 7.5),
+        "ideal_rainfall": (35.0, 70.0),
+        "ideal_soil": "Alluvial / Loamy Sand",
+        "description": "Major winter oilseed crop with bright yellow blooms and low water requirement.",
+        "farmer_tip": "Apply Sulphur (20 kg/ha) alongside balanced NPK to significantly raise oil content and pungency."
+    },
+    "sunflower": {
+        "display_name": "Sunflower",
+        "category": "Oilseed",
+        "ideal_temp": (18.0, 32.0),
+        "ideal_humidity": (40.0, 65.0),
+        "ideal_moisture": (35.0, 60.0),
+        "ideal_ph": (6.2, 7.5),
+        "ideal_rainfall": (45.0, 90.0),
+        "ideal_soil": "Deep Loam / Black Cotton / Sandy Loam",
+        "description": "Photo-insensitive, drought-hardy oilseed adaptable across multiple seasons.",
+        "farmer_tip": "Maintain bee hives near the field during morning flowering hours to ensure complete seed set."
+    },
+
+    # Cash & Commercial Crops
     "cotton": {
         "display_name": "Cotton",
+        "category": "Cash Crop / Commercial",
         "ideal_temp": (21.0, 35.0),
         "ideal_humidity": (50.0, 75.0),
         "ideal_moisture": (40.0, 65.0),
@@ -234,6 +213,7 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
     },
     "jute": {
         "display_name": "Jute",
+        "category": "Cash Crop / Commercial",
         "ideal_temp": (24.0, 37.0),
         "ideal_humidity": (70.0, 95.0),
         "ideal_moisture": (65.0, 90.0),
@@ -243,8 +223,21 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "description": "Warm, humid golden fiber crop cultivated in river floodplains.",
         "farmer_tip": "Requires abundant clean running water for post-harvest stem retting and fiber extraction."
     },
+    "sugarcane": {
+        "display_name": "Sugarcane",
+        "category": "Cash Crop / Commercial",
+        "ideal_temp": (24.0, 38.0),
+        "ideal_humidity": (65.0, 88.0),
+        "ideal_moisture": (65.0, 90.0),
+        "ideal_ph": (6.0, 7.8),
+        "ideal_rainfall": (140.0, 260.0),
+        "ideal_soil": "Deep, well-drained rich Alluvial / Clay Loam",
+        "description": "High-biomass perennial grass demanding generous moisture, heat, and nutrition.",
+        "farmer_tip": "Adopt trash mulching to conserve moisture. Apply potash during tillering to elevate sucrose content."
+    },
     "coffee": {
         "display_name": "Coffee",
+        "category": "Cash Crop / Commercial",
         "ideal_temp": (18.0, 28.0),
         "ideal_humidity": (65.0, 85.0),
         "ideal_moisture": (50.0, 75.0),
@@ -253,6 +246,286 @@ CROP_PROFILES: Dict[str, Dict[str, Any]] = {
         "ideal_soil": "Rich volcanic / Forest Humus Loam",
         "description": "Shade-tolerant plantation crop thriving in gentle highland climates.",
         "farmer_tip": "Provide 50% canopy shade trees (Silver Oak / Albizia) to buffer heat and regulate blossom."
+    },
+    "tea": {
+        "display_name": "Tea",
+        "category": "Cash Crop / Commercial",
+        "ideal_temp": (15.0, 28.0),
+        "ideal_humidity": (70.0, 92.0),
+        "ideal_moisture": (60.0, 85.0),
+        "ideal_ph": (4.5, 5.8),
+        "ideal_rainfall": (150.0, 280.0),
+        "ideal_soil": "Acidic forest humus / Lateritic Loam",
+        "description": "Highland evergreen shrub yielding tender young flushes under misty humid conditions.",
+        "farmer_tip": "Ensure soil pH stays strictly below 5.8. Provide gentle terracing and shade trees (Grevillea)."
+    },
+    "coconut": {
+        "display_name": "Coconut",
+        "category": "Cash Crop / Commercial",
+        "ideal_temp": (25.0, 35.0),
+        "ideal_humidity": (70.0, 95.0),
+        "ideal_moisture": (55.0, 80.0),
+        "ideal_ph": (5.2, 8.0),
+        "ideal_rainfall": (130.0, 250.0),
+        "ideal_soil": "Coastal Sand / Alluvial / Red Loam",
+        "description": "Tropical palm flourishing with warm maritime breezes and abundant sunshine.",
+        "farmer_tip": "Apply common salt (NaCl) alongside potassium chloride (MOP) to boost nut set and weight."
+    },
+
+    # Vegetables & Spices
+    "potato": {
+        "display_name": "Potato",
+        "category": "Vegetable & Spice",
+        "ideal_temp": (14.0, 24.0),
+        "ideal_humidity": (60.0, 80.0),
+        "ideal_moisture": (55.0, 75.0),
+        "ideal_ph": (5.0, 6.5),
+        "ideal_rainfall": (60.0, 110.0),
+        "ideal_soil": "Loose, friable Sandy Loam with rich compost",
+        "description": "Cool-season tuber requiring friable well-aerated soil for tuber expansion and breathing.",
+        "farmer_tip": "Perform earthing up 30-35 days after planting. Ensure potash is supplied to prevent hollow heart."
+    },
+    "tomato": {
+        "display_name": "Tomato",
+        "category": "Vegetable & Spice",
+        "ideal_temp": (18.0, 30.0),
+        "ideal_humidity": (50.0, 75.0),
+        "ideal_moisture": (45.0, 70.0),
+        "ideal_ph": (6.0, 7.0),
+        "ideal_rainfall": (50.0, 90.0),
+        "ideal_soil": "Fertile Loam with good drainage",
+        "description": "Warm-season solanaceous vegetable sensitive to severe frost and continuous rain at bloom.",
+        "farmer_tip": "Stake indeterminate vines. Spray Calcium nitrate to prevent blossom end rot in developing fruits."
+    },
+    "onion": {
+        "display_name": "Onion",
+        "category": "Vegetable & Spice",
+        "ideal_temp": (15.0, 28.0),
+        "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (40.0, 65.0),
+        "ideal_ph": (6.0, 7.2),
+        "ideal_rainfall": (40.0, 80.0),
+        "ideal_soil": "Rich Sandy Loam / Silt Loam free of stones",
+        "description": "Shallow-rooted bulb vegetable requiring uniform moisture and weed-free loose beds.",
+        "farmer_tip": "Stop watering 10-15 days before harvest when tops begin to bend for superior storage curing."
+    },
+    "garlic": {
+        "display_name": "Garlic",
+        "category": "Vegetable & Spice",
+        "ideal_temp": (12.0, 24.0),
+        "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (35.0, 60.0),
+        "ideal_ph": (6.0, 7.5),
+        "ideal_rainfall": (35.0, 75.0),
+        "ideal_soil": "Fertile Sandy Loam with organic mulch",
+        "description": "Aromatic allium crop requiring cool winters for clove splitting and warm sunny bulb maturity.",
+        "farmer_tip": "Plant cloves pointing upright at 10x10 cm spacing. Mulch with straw to control weeds and conserve moisture."
+    },
+
+    # Fruits
+    "apple": {
+        "display_name": "Apple",
+        "category": "Fruit",
+        "ideal_temp": (10.0, 24.0),
+        "ideal_humidity": (55.0, 80.0),
+        "ideal_moisture": (45.0, 70.0),
+        "ideal_ph": (5.5, 6.8),
+        "ideal_rainfall": (90.0, 140.0),
+        "ideal_soil": "Well-drained Loamy with high organic matter",
+        "description": "Temperate tree crop requiring winter chilling hours (800-1000 hours < 7°C).",
+        "farmer_tip": "Maintain clean orchard basins and spray calcium chloride to prevent bitter pit."
+    },
+    "banana": {
+        "display_name": "Banana",
+        "category": "Fruit",
+        "ideal_temp": (22.0, 36.0),
+        "ideal_humidity": (75.0, 95.0),
+        "ideal_moisture": (60.0, 85.0),
+        "ideal_ph": (6.0, 7.5),
+        "ideal_rainfall": (100.0, 200.0),
+        "ideal_soil": "Deep, nutrient-rich fertile Loam",
+        "description": "Heavy feeder of Nitrogen and Potassium requiring warm tropical humid conditions.",
+        "farmer_tip": "Apply high potassium fertilizer during bunch formation and maintain continuous root aeration."
+    },
+    "mango": {
+        "display_name": "Mango",
+        "category": "Fruit",
+        "ideal_temp": (24.0, 38.0),
+        "ideal_humidity": (45.0, 75.0),
+        "ideal_moisture": (35.0, 60.0),
+        "ideal_ph": (5.5, 7.5),
+        "ideal_rainfall": (75.0, 150.0),
+        "ideal_soil": "Well-drained deep Alluvial / Laterite",
+        "description": "Tropical fruit requiring a dry period before flowering for optimum bloom.",
+        "farmer_tip": "Withhold irrigation 2-3 months prior to flowering to encourage reproductive bud differentiation."
+    },
+    "grapes": {
+        "display_name": "Grapes",
+        "category": "Fruit",
+        "ideal_temp": (15.0, 35.0),
+        "ideal_humidity": (40.0, 75.0),
+        "ideal_moisture": (30.0, 55.0),
+        "ideal_ph": (6.5, 8.0),
+        "ideal_rainfall": (50.0, 90.0),
+        "ideal_soil": "Gravelly / Sandy Loam with caliche drainage",
+        "description": "Warm, sunny, dry climate preferred during berry ripening to prevent fungal mildew.",
+        "farmer_tip": "Prune carefully in October and April. Implement drip fertigation with micronutrients."
+    },
+    "watermelon": {
+        "display_name": "Watermelon",
+        "category": "Fruit",
+        "ideal_temp": (24.0, 35.0),
+        "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (30.0, 55.0),
+        "ideal_ph": (6.0, 7.0),
+        "ideal_rainfall": (40.0, 80.0),
+        "ideal_soil": "Sandy / Sandy Loam",
+        "description": "Warm, dry sun-loving cucurbit thriving on riverbed and sandy fields.",
+        "farmer_tip": "Mulch soil with plastic to preserve root warmth and reduce fruit rot."
+    },
+    "muskmelon": {
+        "display_name": "Muskmelon",
+        "category": "Fruit",
+        "ideal_temp": (24.0, 35.0),
+        "ideal_humidity": (45.0, 65.0),
+        "ideal_moisture": (30.0, 55.0),
+        "ideal_ph": (6.0, 7.2),
+        "ideal_rainfall": (40.0, 70.0),
+        "ideal_soil": "Well-drained Sandy Loam",
+        "description": "Requires high heat and low humidity during ripening for high sugar brix.",
+        "farmer_tip": "Reduce watering 10 days before harvest to maximize natural sweetness and aroma."
+    },
+    "orange": {
+        "display_name": "Orange (Citrus)",
+        "category": "Fruit",
+        "ideal_temp": (15.0, 35.0),
+        "ideal_humidity": (50.0, 75.0),
+        "ideal_moisture": (40.0, 65.0),
+        "ideal_ph": (5.5, 7.5),
+        "ideal_rainfall": (75.0, 130.0),
+        "ideal_soil": "Well-drained Light Loam",
+        "description": "Subtropical evergreen citrus requiring well-aerated soil free of high salinity.",
+        "farmer_tip": "Apply zinc and iron micronutrient foliar sprays twice a year to prevent chlorosis."
+    },
+    "papaya": {
+        "display_name": "Papaya",
+        "category": "Fruit",
+        "ideal_temp": (22.0, 35.0),
+        "ideal_humidity": (60.0, 85.0),
+        "ideal_moisture": (50.0, 75.0),
+        "ideal_ph": (6.0, 7.0),
+        "ideal_rainfall": (90.0, 180.0),
+        "ideal_soil": "Rich Sandy Loam with excellent drainage",
+        "description": "Fast-growing tropical herbaceous plant highly intolerant to waterlogging.",
+        "farmer_tip": "Plant on raised mounds to eliminate root stagnation. Protect against papaya ringspot virus."
+    },
+    "pomegranate": {
+        "display_name": "Pomegranate",
+        "category": "Fruit",
+        "ideal_temp": (18.0, 35.0),
+        "ideal_humidity": (30.0, 60.0),
+        "ideal_moisture": (30.0, 55.0),
+        "ideal_ph": (6.0, 7.5),
+        "ideal_rainfall": (50.0, 120.0),
+        "ideal_soil": "Deep Sandy Loam / Loam",
+        "description": "High-value fruit crop adapted to semi-arid climates.",
+        "farmer_tip": "Adopt drip irrigation and regulative bahar treatment for uniform fruit size and color."
+    },
+    "strawberry": {
+        "display_name": "Strawberry",
+        "category": "Fruit",
+        "ideal_temp": (12.0, 22.0),
+        "ideal_humidity": (60.0, 75.0),
+        "ideal_moisture": (50.0, 70.0),
+        "ideal_ph": (5.5, 6.8),
+        "ideal_rainfall": (60.0, 100.0),
+        "ideal_soil": "Rich Sandy Loam with heavy organic manure",
+        "description": "High-value berry requiring cool sunny days, mild nights, and raised bed cultivation.",
+        "farmer_tip": "Plant on raised ridges covered with black plastic mulch. Install drip fertigation with potassium."
+    },
+    "pineapple": {
+        "display_name": "Pineapple",
+        "category": "Fruit",
+        "ideal_temp": (22.0, 34.0),
+        "ideal_humidity": (70.0, 85.0),
+        "ideal_moisture": (45.0, 70.0),
+        "ideal_ph": (4.5, 6.0),
+        "ideal_rainfall": (100.0, 180.0),
+        "ideal_soil": "Acidic Sandy Loam with excellent percolation",
+        "description": "Bromeliad tropical fruit possessing excellent drought tolerance and acidic soil preference.",
+        "farmer_tip": "Apply Ethrel (25 ppm) at 35-leaf stage to induce uniform synchronized flowering and harvest."
+    },
+    "guava": {
+        "display_name": "Guava",
+        "category": "Fruit",
+        "ideal_temp": (20.0, 35.0),
+        "ideal_humidity": (45.0, 70.0),
+        "ideal_moisture": (35.0, 65.0),
+        "ideal_ph": (5.5, 7.5),
+        "ideal_rainfall": (50.0, 110.0),
+        "ideal_soil": "Alluvial / Deep Loam / Red Sandy",
+        "description": "Exceptionally hardy tropical fruit rich in Vitamin C, tolerant to droughts and mild salinity.",
+        "farmer_tip": "Prune branch tips in May to stimulate productive lateral shoots for the winter (Mrig bahar) crop."
+    },
+    "lemon": {
+        "display_name": "Lemon (Citrus)",
+        "category": "Fruit",
+        "ideal_temp": (18.0, 32.0),
+        "ideal_humidity": (45.0, 70.0),
+        "ideal_moisture": (40.0, 65.0),
+        "ideal_ph": (5.8, 7.5),
+        "ideal_rainfall": (55.0, 100.0),
+        "ideal_soil": "Well-drained light Loam / Alluvial",
+        "description": "Evergreen acid citrus providing continuous flushes under sunny frost-free conditions.",
+        "farmer_tip": "Apply copper oxychloride spray before monsoon to protect against citrus canker and twig dieback."
+    },
+    "avocado": {
+        "display_name": "Avocado",
+        "category": "Fruit",
+        "ideal_temp": (16.0, 28.0),
+        "ideal_humidity": (50.0, 75.0),
+        "ideal_moisture": (50.0, 75.0),
+        "ideal_ph": (6.0, 7.0),
+        "ideal_rainfall": (80.0, 140.0),
+        "ideal_soil": "Deep, well-aerated volcanic / Sandy Loam",
+        "description": "Nutrient-dense tropical tree fruit intolerant to heavy water stagnation and phytophthora root rot.",
+        "farmer_tip": "Plant on elevated mounds. Mulch heavily with woodchips to foster healthy shallow feeder roots."
+    },
+    "dragonfruit": {
+        "display_name": "Dragon Fruit (Pitaya)",
+        "category": "Fruit",
+        "ideal_temp": (22.0, 38.0),
+        "ideal_humidity": (40.0, 65.0),
+        "ideal_moisture": (25.0, 50.0),
+        "ideal_ph": (5.5, 7.0),
+        "ideal_rainfall": (40.0, 90.0),
+        "ideal_soil": "Sandy Loam / Gravelly with organic manure",
+        "description": "Climbing cactus producing vibrant exotic fruits with extremely low irrigation demands.",
+        "farmer_tip": "Train vines on sturdy concrete poles with tire rings. Provide light drip irrigation once a week."
+    },
+    "fig": {
+        "display_name": "Fig (Anjeer)",
+        "category": "Fruit",
+        "ideal_temp": (18.0, 35.0),
+        "ideal_humidity": (35.0, 60.0),
+        "ideal_moisture": (25.0, 50.0),
+        "ideal_ph": (6.5, 8.2),
+        "ideal_rainfall": (35.0, 70.0),
+        "ideal_soil": "Gravelly / Calcareous Loam with good drainage",
+        "description": "Ancient drought-tolerant fruit tree thriving under warm Mediterranean and semi-arid weather.",
+        "farmer_tip": "Prune dormant trees in January. Reduce irrigation during fruit ripening to prevent skin cracking."
+    },
+    "blueberry": {
+        "display_name": "Blueberry",
+        "category": "Fruit",
+        "ideal_temp": (10.0, 22.0),
+        "ideal_humidity": (60.0, 80.0),
+        "ideal_moisture": (55.0, 75.0),
+        "ideal_ph": (4.5, 5.5),
+        "ideal_rainfall": (80.0, 140.0),
+        "ideal_soil": "Acidic peat / Sandy Loam rich in organic matter",
+        "description": "Temperate high-antioxidant berry that strictly demands acidic soil and cool chilling hours.",
+        "farmer_tip": "Incorporate elemental sulphur and sphagnum peat moss to keep soil pH within 4.5 - 5.2."
     }
 }
 
@@ -361,20 +634,22 @@ class CropPredictor:
             top_prob = float(probs[top_indices[0]])
 
             alternatives: List[Dict[str, Any]] = []
-            for idx in top_indices[1:4]:
+            for idx in top_indices[1:6]:
                 crop_name = str(classes[idx]).lower()
                 alt_prob = float(probs[idx])
-                if alt_prob > 0.05:  # Only report realistic alternatives
+                if alt_prob > 0.03:  # Report realistic alternatives
                     profile = CROP_PROFILES.get(crop_name, {})
                     alternatives.append({
                         "crop": crop_name,
                         "display_name": profile.get("display_name", crop_name.capitalize()),
+                        "category": profile.get("category", "Field Crop"),
                         "suitability_percent": round(alt_prob * 100, 1),
                         "farmer_tip": profile.get("farmer_tip", ""),
                     })
 
             profile = CROP_PROFILES.get(pred_crop, {})
             display_name = profile.get("display_name", pred_crop.capitalize())
+            category = profile.get("category", "Field Crop")
 
             # Evaluate suitability factors
             factors = self._evaluate_factors(
@@ -397,6 +672,7 @@ class CropPredictor:
                 "available": True,
                 "recommended_crop": pred_crop,
                 "display_name": display_name,
+                "category": category,
                 "confidence": round(top_prob, 3),
                 "suitability_percent": round(top_prob * 100, 1),
                 "description": profile.get("description", "Agronomically suited crop for this land."),
@@ -534,6 +810,7 @@ class CropPredictor:
             "available": True,
             "recommended_crop": pred,
             "display_name": profile.get("display_name", pred.capitalize()),
+            "category": profile.get("category", "Field Crop"),
             "confidence": 0.85,
             "suitability_percent": 85.0,
             "description": profile.get("description", "Recommended by agronomic rule engine."),

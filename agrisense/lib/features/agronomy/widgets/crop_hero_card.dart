@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/crop_visuals.dart';
 import '../../../models/agronomy_models.dart';
 
 class CropHeroCard extends StatelessWidget {
@@ -16,6 +17,9 @@ class CropHeroCard extends StatelessWidget {
     final matchColor = match >= 70
         ? const Color(0xFF10B981)
         : (match >= 40 ? const Color(0xFFF59E0B) : const Color(0xFF6B7280));
+    final catColor = CropVisuals.getCategoryColor(crop.category);
+    final catEmoji = CropVisuals.getCategoryEmoji(crop.category);
+    final cropIcon = CropVisuals.getCropIcon(crop.recommendedCrop);
 
     return Container(
       decoration: BoxDecoration(
@@ -28,7 +32,7 @@ class CropHeroCard extends StatelessWidget {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: Colors.green.shade200, width: 1.5),
+        border: Border.all(color: catColor.withAlpha(80), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,33 +41,41 @@ class CropHeroCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFECFDF5),
+              color: catColor.withAlpha(18),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
               ),
-              border: Border(bottom: BorderSide(color: Colors.green.shade100)),
+              border: Border(bottom: BorderSide(color: catColor.withAlpha(40))),
             ),
             child: Row(
               children: [
-                const Icon(Icons.stars_rounded, color: Color(0xFF059669), size: 16),
+                Text(catEmoji, style: const TextStyle(fontSize: 14)),
                 const SizedBox(width: 6),
-                const Text(
-                  'TOP ML CROP RECOMMENDATION',
+                Text(
+                  'TOP ML RECOMMENDATION • ${crop.category.toUpperCase()}',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.6,
-                    color: Color(0xFF065F46),
+                    color: catColor,
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  'ML Confidence: ${crop.suitabilityPercent.toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF047857),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: catColor.withAlpha(40)),
+                  ),
+                  child: Text(
+                    '${crop.suitabilityPercent.toStringAsFixed(0)}% Confidence',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: catColor,
+                    ),
                   ),
                 ),
               ],
@@ -80,20 +92,20 @@ class CropHeroCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      width: 52,
-                      height: 52,
+                      width: 54,
+                      height: 54,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFD1FAE5), Color(0xFFA7F3D0)],
+                        gradient: LinearGradient(
+                          colors: [catColor.withAlpha(30), catColor.withAlpha(60)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.green.shade300, width: 1.5),
+                        border: Border.all(color: catColor.withAlpha(100), width: 1.5),
                       ),
-                      child: const Icon(
-                        Icons.agriculture_rounded,
-                        color: Color(0xFF047857),
+                      child: Icon(
+                        cropIcon,
+                        color: catColor,
                         size: 28,
                       ),
                     ),

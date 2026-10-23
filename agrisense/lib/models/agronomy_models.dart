@@ -122,12 +122,14 @@ class FactorAnalysis {
 class CropAlternative {
   final String crop;
   final String displayName;
+  final String category;
   final double suitabilityPercent;
   final String farmerTip;
 
   const CropAlternative({
     required this.crop,
     required this.displayName,
+    this.category = 'Crop',
     required this.suitabilityPercent,
     required this.farmerTip,
   });
@@ -136,6 +138,7 @@ class CropAlternative {
     return CropAlternative(
       crop: json['crop'] as String? ?? '',
       displayName: json['display_name'] as String? ?? '',
+      category: json['category'] as String? ?? 'Crop',
       suitabilityPercent: (json['suitability_percent'] as num?)?.toDouble() ?? 0.0,
       farmerTip: json['farmer_tip'] as String? ?? '',
     );
@@ -146,6 +149,7 @@ class CropRecommendation {
   final bool available;
   final String recommendedCrop;
   final String displayName;
+  final String category;
   final double confidence;
   final double suitabilityPercent;
   final String description;
@@ -158,6 +162,7 @@ class CropRecommendation {
     required this.available,
     required this.recommendedCrop,
     required this.displayName,
+    this.category = 'Field Crop',
     required this.confidence,
     required this.suitabilityPercent,
     required this.description,
@@ -181,6 +186,7 @@ class CropRecommendation {
       available: json['available'] as bool? ?? false,
       recommendedCrop: json['recommended_crop'] as String? ?? 'maize',
       displayName: json['display_name'] as String? ?? 'Maize (Corn)',
+      category: json['category'] as String? ?? 'Field Crop',
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.85,
       suitabilityPercent: (json['suitability_percent'] as num?)?.toDouble() ?? 85.0,
       description: json['description'] as String? ?? '',

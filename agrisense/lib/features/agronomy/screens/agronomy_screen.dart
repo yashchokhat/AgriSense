@@ -4,6 +4,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../providers/agronomy_provider.dart';
 import '../widgets/soil_test_editor_dialog.dart';
 import '../widgets/live_iot_metrics_bar.dart';
+import '../widgets/weather_playground_widget.dart';
+import '../widgets/crop_category_filter_bar.dart';
 import '../widgets/crop_hero_card.dart';
 import '../widgets/environmental_match_chart.dart';
 import '../widgets/crop_alternatives_chart.dart';
@@ -68,7 +70,7 @@ class AgronomyScreen extends StatelessWidget {
           final crop = advisory?.cropRecommendation;
           final fert = advisory?.fertilizerRecommendation;
           final env = advisory?.environment ?? {};
-          final isLiveIot = advisory?.telemetrySource['is_live_iot'] == true;
+          final isLiveIot = advisory?.telemetrySource['is_live_iot'] == true && !provider.isSimulationMode;
 
           return RefreshIndicator(
             color: AppColors.primary,
@@ -86,32 +88,39 @@ class AgronomyScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // 2. Best Crop for Land (ML Hero Card)
+                  // 2. Real-time Weather Playground (Interactive What-If Sliders & Presets)
+                  const WeatherPlaygroundWidget(),
+
+                  // 3. Category Filter Bar (Fruits, Cereals, Pulses, Cash Crops, Veggies)
+                  const CropCategoryFilterBar(),
+                  const SizedBox(height: 14),
+
+                  // 4. Best Crop for Land (ML Hero Card)
                   if (crop != null) ...[
                     CropHeroCard(crop: crop),
                     const SizedBox(height: 14),
 
-                    // 3. Sensor vs Crop Range Chart (fl_chart)
+                    // 5. Sensor vs Crop Range Chart (fl_chart)
                     if (crop.factorsAnalysis.isNotEmpty) ...[
                       EnvironmentalMatchChart(factors: crop.factorsAnalysis),
                       const SizedBox(height: 14),
                     ],
                   ],
 
-                  // 4. Recommended Fertilizer Action Card
+                  // 6. Recommended Fertilizer Action Card
                   if (fert != null) ...[
                     FertilizerActionCard(fert: fert),
                     const SizedBox(height: 14),
                   ],
 
-                  // 5. Active Soil Test Quick Bar (NPK & pH)
+                  // 7. Active Soil Test Quick Bar (NPK & pH)
                   SoilTestQuickBar(
                     soil: soil,
                     onEdit: () => _openSoilEditor(context, provider),
                   ),
                   const SizedBox(height: 14),
 
-                  // 6. Alternative Crop Matches Bar Chart
+                  // 8. Alternative Crop Matches Bar Chart (Category Filterable)
                   if (crop != null && crop.alternatives.isNotEmpty) ...[
                     CropAlternativesChart(alternatives: crop.alternatives),
                     const SizedBox(height: 20),

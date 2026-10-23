@@ -14,6 +14,13 @@ class AgronomyProvider with ChangeNotifier {
   bool _isSaving = false;
   String? _errorMessage;
 
+  // Real-time Weather & Sensor Simulation State
+  bool _isSimulationMode = false;
+  double _simTemp = 26.0;
+  double _simHumidity = 60.0;
+  double _simMoisture = 50.0;
+  String _selectedCategory = 'All';
+
   AgronomyProvider(this._apiClient, this._prefs)
       : _soilProfile = SoilProfile(
           nitrogen: _prefs.soilNitrogen,
@@ -35,6 +42,67 @@ class AgronomyProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get errorMessage => _errorMessage;
+
+  bool get isSimulationMode => _isSimulationMode;
+  double get simTemp => _simTemp;
+  double get simHumidity => _simHumidity;
+  double get simMoisture => _simMoisture;
+  String get selectedCategory => _selectedCategory;
+
+  void setSelectedCategory(String cat) {
+    _selectedCategory = cat;
+    notifyListeners();
+  }
+
+  void toggleSimulationMode(bool enabled) {
+    _isSimulationMode = enabled;
+    if (!enabled) {
+      fetchAdvisory();
+    } else {
+      simulateConditions();
+    }
+  }
+
+  Future<void> simulateConditions({double? temp, double? hum, double? moisture}) async {
+    if (temp != null) _simTemp = temp;
+    if (hum != null) _simHumidity = hum;
+    if (moisture != null) _simMoisture = moisture;
+
+    try {
+      final overrides = {
+        'temperature_c': _simTemp,
+        'humidity_percent': _simHumidity,
+        'soil_moisture_estimate_percent': _simMoisture,
+      };
+      _advisory = await _apiClient.runCustomAgronomyAdvisory(overrides);
+      _errorMessage = null;
+      notifyListeners();
+    } on AppException catch (e) {
+      _errorMessage = e.message;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Simulation failed: $e';
+      notifyListeners();
+    }
+  }
+
+  Future<void> applyWeatherPreset(String presetKey) async {
+    switch (presetKey) {
+      case 'cool_winter':
+        await simulateConditions(temp: 16.0, hum: 65.0, moisture: 55.0);
+        break;
+      case 'hot_summer':
+        await simulateConditions(temp: 34.0, hum: 42.0, moisture: 25.0);
+        break;
+      case 'monsoon_rain':
+        await simulateConditions(temp: 27.0, hum: 85.0, moisture: 85.0);
+        break;
+      case 'spring_mild':
+      default:
+        await simulateConditions(temp: 23.0, hum: 58.0, moisture: 50.0);
+        break;
+    }
+  }
 
   Future<void> fetchAdvisory({bool silent = false}) async {
     if (!silent) {
