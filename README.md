@@ -261,3 +261,35 @@ backend/venv/bin/gunicorn --bind 0.0.0.0:5001 --workers 4 --timeout 60 "backend.
 1. **Service Account Protection:** `backend/agrisense-ed6c9-firebase-adminsdk-*.json` and `backend/.env` are strictly excluded in `.gitignore`.
 2. **Client Isolation:** The Flutter app connects strictly via the Flask REST API. The Firebase Admin private key is **never** bundled into the mobile client.
 3. **HTTPS / TLS:** Always place the Flask backend behind a reverse proxy (e.g. Nginx, Cloud Run, or AWS ECS) with a valid SSL certificate in production.
+
+---
+
+## 10. Live AWS Cloud Deployment
+
+The AgriSense backend is hosted and live on **Amazon Web Services (AWS)** in the `ap-south-1` (Mumbai) region:
+
+- **Instance Type:** AWS EC2 (`t3.micro`) — Ubuntu 24.04 LTS
+- **Process Manager:** `systemd` (`agrisense.service`) with Gunicorn WSGI
+- **Web Server & Reverse Proxy:** Nginx (Proxying port 80 to Gunicorn on port 5001)
+- **Public IP:** `13.233.111.26`
+- **Base API URL:** `http://13.233.111.26/api/v1`
+
+### Live API Verification Endpoints
+
+| Endpoint | Method | Description | Live Link |
+| :--- | :--- | :--- | :--- |
+| `/api/v1/health` | `GET` | Service & ML engine health check | [Health Check](http://13.233.111.26/api/v1/health) |
+| `/api/v1/dashboard` | `GET` | Aggregated telemetry, trends & ML recommendation | [Dashboard](http://13.233.111.26/api/v1/dashboard) |
+| `/api/v1/sensors/latest` | `GET` | Latest validated live sensor reading | [Sensors](http://13.233.111.26/api/v1/sensors/latest) |
+| `/api/v1/predictions/latest` | `GET` | Current irrigation ML prediction & confidence | [Predictions](http://13.233.111.26/api/v1/predictions/latest) |
+| `/api/v1/alerts` | `GET` | Active system & agronomic alerts | [Alerts](http://13.233.111.26/api/v1/alerts) |
+| `/api/v1/config` | `GET` | Dynamic thresholds & crop presets | [Config](http://13.233.111.26/api/v1/config) |
+
+---
+
+## 11. Mobile App APK Download
+
+The compiled Android production APK is available on GitHub Releases:
+- **Download Latest APK:** [AgriSense v1.0.0 Release](https://github.com/yashchokhat/AgriSense/releases/tag/v1.0.0)
+- In the mobile app settings, tap the **AWS Cloud** preset chip to instantly connect to the live AWS backend.
+

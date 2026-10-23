@@ -5,6 +5,9 @@ class AppConfig {
   static const String appName = 'AgriSense';
   static const String appVersion = '1.0.0';
 
+  /// Production AWS EC2 endpoint
+  static const String awsCloudUrl = 'http://13.233.111.26/api/v1';
+
   /// Determines the sensible default API base URL based on platform.
   static String get defaultBaseUrl {
     if (kIsWeb) {
