@@ -69,9 +69,13 @@ class Config:
     # ML Model Artifact Paths
     _raw_model_path = os.environ.get("MODEL_PATH", "backend/ml/models/irrigation_model.joblib")
     _raw_meta_path = os.environ.get("METADATA_PATH", "backend/ml/models/model_metadata.json")
+    _raw_crop_model_path = os.environ.get("CROP_MODEL_PATH", "backend/ml/models/crop_model.joblib")
+    _raw_fert_model_path = os.environ.get("FERTILIZER_MODEL_PATH", "backend/ml/models/fertilizer_model.joblib")
 
     MODEL_PATH = str(PROJECT_ROOT / _raw_model_path) if not os.path.isabs(_raw_model_path) else _raw_model_path
     METADATA_PATH = str(PROJECT_ROOT / _raw_meta_path) if not os.path.isabs(_raw_meta_path) else _raw_meta_path
+    CROP_MODEL_PATH = str(PROJECT_ROOT / _raw_crop_model_path) if not os.path.isabs(_raw_crop_model_path) else _raw_crop_model_path
+    FERTILIZER_MODEL_PATH = str(PROJECT_ROOT / _raw_fert_model_path) if not os.path.isabs(_raw_fert_model_path) else _raw_fert_model_path
 
     # CORS Allowed Origins
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")

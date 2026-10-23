@@ -13,10 +13,12 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, precision_score, recall_score, f1_score, accuracy_score
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, accuracy_score
 from sklearn.model_selection import train_test_split
 
 from backend.ml.features import FEATURE_NAMES, calculate_vpd
+from backend.ml.crop_model import CropPredictor
+from backend.ml.fertilizer_model import FertilizerPredictor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("agrisense.ml.train")
@@ -24,46 +26,30 @@ logger = logging.getLogger("agrisense.ml.train")
 MODELS_DIR = Path(__file__).resolve().parent / "models"
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
-MODEL_OUTPUT_PATH = MODELS_DIR / "irrigation_model.joblib"
+IRRIGATION_MODEL_PATH = MODELS_DIR / "irrigation_model.joblib"
+CROP_MODEL_PATH = MODELS_DIR / "crop_model.joblib"
+FERTILIZER_MODEL_PATH = MODELS_DIR / "fertilizer_model.joblib"
 METADATA_OUTPUT_PATH = MODELS_DIR / "model_metadata.json"
 
+
 def generate_agronomic_reference_dataset(n_samples: int = 2500, random_seed: int = 42) -> pd.DataFrame:
-    """
-    Synthesizes a scientifically grounded agronomic training dataset based on FAO-56
-    guidelines (soil water retention characteristics, crop depletion factors, and evaporative demand).
-    """
+    """Synthesizes an agronomic training dataset based on FAO-56 guidelines."""
     np.random.seed(random_seed)
 
-    # 1. Soil types: 0 = Sand (low water retention), 1 = Loam (medium), 2 = Clay (high)
     soil_type_code = np.random.choice([0, 1, 2], size=n_samples, p=[0.25, 0.50, 0.25])
-
-    # 2. Crop types: 0 = General, 1 = Wheat, 2 = Tomato, 3 = Maize
     crop_type_code = np.random.choice([0, 1, 2, 3], size=n_samples, p=[0.3, 0.25, 0.25, 0.2])
 
-    # 3. Microclimate: Temperature (15 to 42 °C), Humidity (20 to 85 %)
     temp_c = np.random.uniform(15.0, 42.0, size=n_samples)
     humidity_pct = np.random.uniform(20.0, 85.0, size=n_samples)
-
-    # 4. VPD calculation
     vpd_kpa = np.array([calculate_vpd(t, h) for t, h in zip(temp_c, humidity_pct)])
 
-    # 5. Soil Moisture estimate (0 to 100%)
-    # Varied across the spectrum
     soil_moisture = np.random.uniform(5.0, 95.0, size=n_samples)
-
-    # 6. Raw ESP32 ADC (inverse relationship with moisture: ~4095 is dry, ~1500 is wet)
-    # Add minor sensor noise
     adc_noise = np.random.normal(0, 40, size=n_samples)
     soil_ao_raw = 4095 - ((soil_moisture / 100.0) * (4095 - 1400)) + adc_noise
     soil_ao_raw = np.clip(soil_ao_raw, 0, 4095).astype(int)
 
-    # 7. Ground truth labeling based on agronomic thresholds:
-    # Sand wilting point ~ 10-15%, field capacity ~ 25% -> threshold ~ 20%
-    # Loam wilting point ~ 15-20%, field capacity ~ 45% -> threshold ~ 35%
-    # Clay wilting point ~ 22-28%, field capacity ~ 60% -> threshold ~ 45%
     base_thresholds = {0: 22.0, 1: 35.0, 2: 45.0}
 
-    # High evaporative demand (VPD > 1.8 kPa or Temp > 32°C) increases depletion urgency
     labels = []
     for i in range(n_samples):
         st = soil_type_code[i]
@@ -73,19 +59,14 @@ def generate_agronomic_reference_dataset(n_samples: int = 2500, random_seed: int
         crop = crop_type_code[i]
 
         threshold = base_thresholds[st]
-        # Sensitive crops (e.g. Tomato = 2) require earlier irrigation (+5% buffer)
-        if crop == 2:
+        if crop == 2:  # Tomato
             threshold += 5.0
-
-        # Atmospheric stress adjustment
         if vpd > 2.0 or temp > 33.0:
             threshold += 4.0
 
-        # Irrigation needed if current moisture is below stress threshold
-        need_irrigation = 1 if sm < threshold else 0
-        labels.append(need_irrigation)
+        labels.append(1 if sm < threshold else 0)
 
-    df = pd.DataFrame({
+    return pd.DataFrame({
         "soil_moisture_estimate_percent": np.round(soil_moisture, 1),
         "soil_ao_raw": soil_ao_raw,
         "temperature_c": np.round(temp_c, 1),
@@ -96,32 +77,19 @@ def generate_agronomic_reference_dataset(n_samples: int = 2500, random_seed: int
         "irrigation_needed": labels,
     })
 
-    return df
 
-def train_and_evaluate():
-    """Trains the baseline model and saves verified artifacts."""
-    logger.info("Generating reference agronomic training dataset...")
+def train_irrigation_model():
+    """Trains and returns the irrigation prediction model."""
+    logger.info("--- Training Irrigation Model ---")
     df = generate_agronomic_reference_dataset(n_samples=3000, random_seed=42)
 
     X = df[FEATURE_NAMES]
     y = df["irrigation_needed"]
 
-    # Train / Test split (80% train, 20% held-out test)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=42, stratify=y
     )
 
-    logger.info("Dataset shape: Train=%s, Test=%s", X_train.shape, X_test.shape)
-    logger.info("Class distribution in Test: %s", dict(y_test.value_counts()))
-
-    # 1. Baseline: Logistic Regression
-    lr = LogisticRegression(max_iter=500, random_state=42)
-    lr.fit(X_train, y_train)
-    y_pred_lr = lr.predict(X_test)
-    f1_lr = f1_score(y_test, y_pred_lr)
-    logger.info("Baseline Logistic Regression Test F1: %.4f", f1_lr)
-
-    # 2. Random Forest Classifier
     rf = RandomForestClassifier(
         n_estimators=100,
         max_depth=7,
@@ -132,51 +100,72 @@ def train_and_evaluate():
     rf.fit(X_train, y_train)
     y_pred_rf = rf.predict(X_test)
 
-    # Metrics
-    acc = accuracy_score(y_test, y_pred_rf)
-    prec = precision_score(y_test, y_pred_rf)
-    rec = recall_score(y_test, y_pred_rf)
-    f1 = f1_score(y_test, y_pred_rf)
+    acc = float(accuracy_score(y_test, y_pred_rf))
+    f1 = float(f1_score(y_test, y_pred_rf))
     cm = confusion_matrix(y_test, y_pred_rf).tolist()
 
-    logger.info("Random Forest Evaluation:")
-    logger.info("  Accuracy:  %.4f", acc)
-    logger.info("  Precision: %.4f", prec)
-    logger.info("  Recall:    %.4f", rec)
-    logger.info("  F1 Score:  %.4f", f1)
-    logger.info("  Confusion Matrix: %s", cm)
+    joblib.dump(rf, IRRIGATION_MODEL_PATH)
+    logger.info("Saved Irrigation model to %s (Accuracy: %.4f, F1: %.4f)", IRRIGATION_MODEL_PATH, acc, f1)
 
-    # Save model artifact
-    joblib.dump(rf, MODEL_OUTPUT_PATH)
-    logger.info("Saved model to %s", MODEL_OUTPUT_PATH)
+    return {
+        "accuracy": round(acc, 4),
+        "f1_score": round(f1, 4),
+        "confusion_matrix": cm,
+    }
 
-    # Feature importances
-    feature_importances = dict(zip(FEATURE_NAMES, [round(float(imp), 4) for imp in rf.feature_importances_]))
+
+def train_all_models():
+    """Unified entry point to train all AgriSense ML models."""
+    logger.info("=== Starting AgriSense Full ML Training Pipeline ===")
+
+    # 1. Irrigation Model
+    irrigation_metrics = train_irrigation_model()
+
+    # 2. Crop Recommendation Model
+    logger.info("--- Training Crop Recommendation Model ---")
+    crop_predictor = CropPredictor(model_path=str(CROP_MODEL_PATH))
+    crop_acc = crop_predictor.train_and_save()
+
+    # 3. Fertilizer Recommendation Model
+    logger.info("--- Training Fertilizer Recommendation Model ---")
+    fert_predictor = FertilizerPredictor(model_path=str(FERTILIZER_MODEL_PATH))
+    fert_acc = fert_predictor.train_and_save()
 
     metadata = {
-        "model_type": "RandomForestClassifier",
-        "model_version": "v1.0.0-rf-agronomic",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "features": FEATURE_NAMES,
-        "feature_importances": feature_importances,
-        "evaluation_metrics": {
-            "accuracy": round(float(acc), 4),
-            "precision": round(float(prec), 4),
-            "recall": round(float(rec), 4),
-            "f1_score": round(float(f1), 4),
-            "confusion_matrix": cm,
-            "baseline_logistic_regression_f1": round(float(f1_lr), 4),
+        "system": "AgriSense Precision Agronomy & IoT Suite",
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "models": {
+            "irrigation": {
+                "model_type": "RandomForestClassifier",
+                "model_version": "v1.1.0-rf-agronomic",
+                "path": str(IRRIGATION_MODEL_PATH),
+                "accuracy": irrigation_metrics["accuracy"],
+                "f1_score": irrigation_metrics["f1_score"],
+            },
+            "crop_recommendation": {
+                "model_type": "RandomForestClassifier",
+                "model_version": "v1.0.0-rf-crop",
+                "path": str(CROP_MODEL_PATH),
+                "accuracy": round(crop_acc, 4),
+                "classes_count": 22,
+            },
+            "fertilizer_recommendation": {
+                "model_type": "Pipeline(StandardScaler+OneHotEncoder+RandomForest)",
+                "model_version": "v1.0.0-rf-fertilizer",
+                "path": str(FERTILIZER_MODEL_PATH),
+                "accuracy": round(fert_acc, 4),
+                "classes_count": 7,
+            },
         },
-        "training_samples": len(X_train),
-        "test_samples": len(X_test),
-        "status": "trained_and_validated",
+        "status": "ready_for_production",
     }
 
     with open(METADATA_OUTPUT_PATH, "w") as f:
         json.dump(metadata, f, indent=2)
 
-    logger.info("Saved metadata to %s", METADATA_OUTPUT_PATH)
+    logger.info("=== All models trained successfully. Saved metadata to %s ===", METADATA_OUTPUT_PATH)
     return metadata
 
+
 if __name__ == "__main__":
-    train_and_evaluate()
+    train_all_models()

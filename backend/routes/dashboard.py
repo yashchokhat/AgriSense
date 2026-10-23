@@ -39,6 +39,10 @@ def get_dashboard_summary():
     # 4. 24-hour summary stats
     history_summary = history_svc.get_history(hours=24, limit=20)["summary"] if history_svc else None
 
+    # 5. Smart Agronomy Advisory (Kaggle ML Models for Crop & Fertilizer + Soil NPK/pH)
+    agronomy_svc = getattr(current_app, "agronomy_service", None)
+    agronomy_advisory = agronomy_svc.get_agronomy_advisory(live_telemetry=normalized) if agronomy_svc else None
+
     # Construct complete dashboard model
     dashboard_data = {
         "device": {
@@ -83,6 +87,7 @@ def get_dashboard_summary():
             },
         },
         "recommendation": recommendation,
+        "agronomy": agronomy_advisory,
         "alerts_summary": {
             "count": len(active_alerts),
             "critical_count": sum(1 for a in active_alerts if a["severity"] == "CRITICAL"),

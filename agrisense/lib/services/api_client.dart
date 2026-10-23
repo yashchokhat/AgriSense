@@ -6,6 +6,7 @@ import '../models/sensor_reading.dart';
 import '../models/prediction.dart';
 import '../models/alert_item.dart';
 import '../models/history_response.dart';
+import '../models/agronomy_models.dart';
 
 class ApiClient {
   late Dio _dio;
@@ -151,6 +152,72 @@ class ApiClient {
     try {
       final res = await _dio.post('/config', data: {'thresholds': thresholds});
       _validateResponse(res);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  /// Unified Smart Agronomy Advisory (Kaggle ML Models for Crop & Fertilizer + Soil NPK/pH)
+  Future<AgronomyAdvisory> getAgronomyAdvisory() async {
+    try {
+      final res = await _dio.get('/recommendations/agronomy');
+      _validateResponse(res);
+      return AgronomyAdvisory.fromJson(res.data['data']);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  /// Run custom agronomy advisory with overrides
+  Future<AgronomyAdvisory> runCustomAgronomyAdvisory(Map<String, dynamic> overrides) async {
+    try {
+      final res = await _dio.post('/recommendations/agronomy', data: overrides);
+      _validateResponse(res);
+      return AgronomyAdvisory.fromJson(res.data['data']);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  /// Get active Soil Test Profile
+  Future<SoilProfile> getSoilProfile() async {
+    try {
+      final res = await _dio.get('/recommendations/soil-profile');
+      _validateResponse(res);
+      return SoilProfile.fromJson(res.data['data']);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  /// Update active Soil Test Profile
+  Future<SoilProfile> updateSoilProfile(SoilProfile profile) async {
+    try {
+      final res = await _dio.post('/recommendations/soil-profile', data: profile.toJson());
+      _validateResponse(res);
+      return SoilProfile.fromJson(res.data['data']);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  /// Predict Crop using Kaggle ML model
+  Future<CropRecommendation> predictCrop(Map<String, dynamic> params) async {
+    try {
+      final res = await _dio.post('/recommendations/crop', data: params);
+      _validateResponse(res);
+      return CropRecommendation.fromJson(res.data['data']);
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  /// Predict Fertilizer using Kaggle ML model
+  Future<FertilizerRecommendation> predictFertilizer(Map<String, dynamic> params) async {
+    try {
+      final res = await _dio.post('/recommendations/fertilizer', data: params);
+      _validateResponse(res);
+      return FertilizerRecommendation.fromJson(res.data['data']);
     } on DioException catch (e) {
       throw _handleDioError(e);
     }

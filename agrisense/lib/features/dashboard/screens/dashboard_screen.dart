@@ -14,12 +14,14 @@ class DashboardScreen extends StatelessWidget {
   final VoidCallback? onNavigateToAlerts;
   final VoidCallback? onNavigateToInsights;
   final VoidCallback? onNavigateToSettings;
+  final VoidCallback? onNavigateToAgronomy;
 
   const DashboardScreen({
     super.key,
     this.onNavigateToAlerts,
     this.onNavigateToInsights,
     this.onNavigateToSettings,
+    this.onNavigateToAgronomy,
   });
 
   @override
@@ -163,12 +165,119 @@ class DashboardScreen extends StatelessWidget {
                 SoilMoistureGauge(reading: telemetry),
                 const SizedBox(height: 16),
 
-                // Recommendation Card
+                // Recommendation Card (Irrigation AI)
                 RecommendationCard(
                   recommendation: recommendation,
                   onTapInsights: onNavigateToInsights,
                 ),
                 const SizedBox(height: 16),
+
+                // Crop & Fertilizer Advisory Quick Card (Kaggle ML Models)
+                if (data.agronomy != null) ...[
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: Colors.green.shade200),
+                    ),
+                    color: Colors.green.shade50.withAlpha(80),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade100,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(Icons.eco_rounded, color: Colors.green.shade800, size: 18),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Crop & Fertilizer ML Advisory',
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                              const Spacer(),
+                              TextButton.icon(
+                                onPressed: onNavigateToAgronomy,
+                                icon: const Icon(Icons.arrow_forward_rounded, size: 14),
+                                label: const Text('Details', style: TextStyle(fontSize: 12)),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.green.shade100),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('BEST CROP', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.textMuted)),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        data.agronomy!.cropRecommendation.displayName,
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.green),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${data.agronomy!.cropRecommendation.suitabilityPercent.toStringAsFixed(0)}% Match',
+                                        style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.amber.shade100),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('FERTILIZER', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.textMuted)),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        data.agronomy!.fertilizerRecommendation.displayName,
+                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.orange.shade800),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        data.agronomy!.fertilizerRecommendation.recommendedDosage,
+                                        style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
                 // Section Title: Environment Sensors
                 Text(

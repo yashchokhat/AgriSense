@@ -22,15 +22,22 @@ flowchart LR
 - **Real-Time Telemetry:** Continuous reading of temperature, relative humidity, raw 12-bit soil moisture ADC, and calibrated volumetric estimates from Firebase Realtime Database.
 - **Sensor Data Quality & Health:** Dedicated validation layer detecting stale device broadcasts, sensor read faults, out-of-range ADC values, and physical boundary violations.
 - **Deduplicated History Ingestion:** Automated backend ingestion that watches device progression (`uptime_ms`), filters duplicates, and writes timestamped records to `/AgriSense/history`.
-- **Machine Learning Pipeline:** Trained `RandomForestClassifier` predicting crop irrigation need based on soil moisture, ambient temperature, relative humidity, Vapor Pressure Deficit (VPD), crop sensitivity, and soil type.
+- **Machine Learning Pipeline:**
+  - **Irrigation Prediction:** Trained `RandomForestClassifier` predicting crop irrigation need based on soil moisture, ambient temperature, relative humidity, Vapor Pressure Deficit (VPD), crop sensitivity, and soil type.
+  - **Crop Recommendation (Kaggle Dataset):** Multi-class `RandomForestClassifier` (99.55% accuracy) predicting the highest-yielding crop for the land based on N, P, K, soil pH, rainfall, temperature, and humidity across 22 crop classes.
+  - **Fertilizer Recommendation (Kaggle Dataset):** Multi-class `RandomForestClassifier Pipeline` (100% accuracy) recommending specific fertilizers (Urea, DAP, 14-35-14, 28-28, 17-17-17, 20-20, 10-26-26) with dosage, application guidelines, and nutrient deficit diagnosis.
+- **Smart Sensor & Soil Test Synthesis:**
+  - Real-time IoT Telemetry: Temperature, Relative Humidity (DHT11), and Soil Moisture (Capacitive sensor) streamed live from ESP32.
+  - Missing Hardware Sensors (NPK & pH): Backend provides balanced hardcoded defaults while the mobile app provides dedicated space for farmers to enter soil test lab values or choose one-tap soil presets.
 - **Transparent Fallback Rule Engine:** Gracefully falls back to FAO-56 agronomic thresholds when the ML model is unavailable or telemetry fails validation.
 - **Operational Alerts Engine:** Real-time generation of `CRITICAL`, `WARNING`, `INFO`, and `ERROR` alerts for water stress, extreme heat, chill, and hardware faults.
 - **Modern Flutter UI (Material 3):**
-  - **Home Dashboard:** Live gauges, connectivity status, metric cards, recommendation banner, and 24h trends.
+  - **Home Dashboard:** Live gauges, connectivity status, metric cards, recommendation banner, quick crop & fertilizer advisory, and 24h trends.
+  - **Crop & Soil Advisory Screen:** Complete land suitability breakdown, soil test lab report editor with NPK/pH sliders and presets, best crop badge with suitability percentage, and fertilizer application guide.
   - **Sensor Analytics:** Interactive time-series charts (`fl_chart`) for moisture, temperature, and humidity across 6h, 24h, and 7d windows.
   - **AI Insights:** Full agronomic factor breakdown, confidence score, and on-demand inference triggers.
   - **Active Alerts:** Categorized alert cards with sensor trigger values.
-  - **Settings:** Dynamic API host configuration with one-tap presets (Emulator, Localhost, LAN IP), connection tester, crop/soil selectors, and custom threshold tuning.
+  - **Settings:** Dynamic API host configuration with one-tap presets (AWS Cloud, Emulator, Localhost), connection tester, crop/soil selectors, and custom threshold tuning.
 
 ---
 
@@ -280,6 +287,10 @@ The AgriSense backend is hosted and live on **Amazon Web Services (AWS)** in the
 | :--- | :--- | :--- | :--- |
 | `/api/v1/health` | `GET` | Service & ML engine health check | [Health Check](http://13.233.111.26/api/v1/health) |
 | `/api/v1/dashboard` | `GET` | Aggregated telemetry, trends & ML recommendation | [Dashboard](http://13.233.111.26/api/v1/dashboard) |
+| `/api/v1/recommendations/agronomy` | `GET` | Unified Kaggle Crop & Fertilizer advisory + Soil test | [Advisory](http://13.233.111.26/api/v1/recommendations/agronomy) |
+| `/api/v1/recommendations/soil-profile` | `GET / POST` | Read or update farmer NPK & pH soil test values | [Soil Profile](http://13.233.111.26/api/v1/recommendations/soil-profile) |
+| `/api/v1/recommendations/crop` | `POST` | Custom ML Crop recommendation inference | [Crop Predict](http://13.233.111.26/api/v1/recommendations/crop) |
+| `/api/v1/recommendations/fertilizer` | `POST` | Custom ML Fertilizer recommendation inference | [Fertilizer Predict](http://13.233.111.26/api/v1/recommendations/fertilizer) |
 | `/api/v1/sensors/latest` | `GET` | Latest validated live sensor reading | [Sensors](http://13.233.111.26/api/v1/sensors/latest) |
 | `/api/v1/predictions/latest` | `GET` | Current irrigation ML prediction & confidence | [Predictions](http://13.233.111.26/api/v1/predictions/latest) |
 | `/api/v1/alerts` | `GET` | Active system & agronomic alerts | [Alerts](http://13.233.111.26/api/v1/alerts) |

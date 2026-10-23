@@ -15,7 +15,10 @@ from backend.services.sensor_service import SensorService
 from backend.services.history_service import HistoryService
 from backend.services.recommendation_service import RecommendationService
 from backend.services.alert_service import AlertService
+from backend.services.agronomy_service import AgronomyService
 from backend.ml.predict import IrrigationPredictor
+from backend.ml.crop_model import CropPredictor
+from backend.ml.fertilizer_model import FertilizerPredictor
 from backend.routes.utils import api_response
 
 from backend.routes.health import health_bp
@@ -24,6 +27,7 @@ from backend.routes.sensors import sensors_bp
 from backend.routes.predictions import predictions_bp
 from backend.routes.alerts import alerts_bp
 from backend.routes.settings import settings_bp
+from backend.routes.recommendations import recommendations_bp
 
 # Configure logging
 logging.basicConfig(
@@ -85,6 +89,19 @@ def create_app(config_class=Config) -> Flask:
     )
     app.alert_service = alert_svc
 
+    # 7. Initialize Crop & Fertilizer Agronomy ML Services (Kaggle Datasets)
+    crop_predictor = CropPredictor(model_path=app.config["CROP_MODEL_PATH"])
+    app.crop_predictor = crop_predictor
+
+    fertilizer_predictor = FertilizerPredictor(model_path=app.config["FERTILIZER_MODEL_PATH"])
+    app.fertilizer_predictor = fertilizer_predictor
+
+    agronomy_svc = AgronomyService(
+        crop_predictor=crop_predictor,
+        fertilizer_predictor=fertilizer_predictor,
+    )
+    app.agronomy_service = agronomy_svc
+
     # Register Blueprints under /api/v1 prefix
     api_prefix = "/api/v1"
     app.register_blueprint(health_bp, url_prefix=api_prefix)
@@ -93,6 +110,7 @@ def create_app(config_class=Config) -> Flask:
     app.register_blueprint(predictions_bp, url_prefix=api_prefix)
     app.register_blueprint(alerts_bp, url_prefix=api_prefix)
     app.register_blueprint(settings_bp, url_prefix=api_prefix)
+    app.register_blueprint(recommendations_bp, url_prefix=api_prefix)
 
     # Root redirect / index
     @app.route("/", methods=["GET"])
