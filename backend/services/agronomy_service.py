@@ -109,6 +109,7 @@ class AgronomyService:
         """
         now = datetime.now(timezone.utc)
         overrides = overrides or {}
+        active_profile = self.get_soil_profile()
 
         # 1. Resolve environmental data (prioritize live IoT telemetry from ESP32)
         calibrated = (live_telemetry or {}).get("calibrated", {})
@@ -133,13 +134,13 @@ class AgronomyService:
             moisture = 40.0  # Default fallback soil moisture
 
         # 2. Resolve soil parameters (prioritize overrides, then active profile, then hardcoded)
-        nitrogen = float(overrides.get("nitrogen", self._soil_profile["nitrogen"]))
-        phosphorus = float(overrides.get("phosphorus", self._soil_profile["phosphorus"]))
-        potassium = float(overrides.get("potassium", self._soil_profile["potassium"]))
-        ph = float(overrides.get("ph", self._soil_profile["ph"]))
-        rainfall = float(overrides.get("rainfall_mm", self._soil_profile["rainfall_mm"]))
-        soil_type = str(overrides.get("soil_type", self._soil_profile["soil_type"]))
-        target_crop = str(overrides.get("target_crop", self._soil_profile["target_crop"]))
+        nitrogen = float(overrides.get("nitrogen", active_profile["nitrogen"]))
+        phosphorus = float(overrides.get("phosphorus", active_profile["phosphorus"]))
+        potassium = float(overrides.get("potassium", active_profile["potassium"]))
+        ph = float(overrides.get("ph", active_profile["ph"]))
+        rainfall = float(overrides.get("rainfall_mm", active_profile["rainfall_mm"]))
+        soil_type = str(overrides.get("soil_type", active_profile["soil_type"]))
+        target_crop = str(overrides.get("target_crop", active_profile["target_crop"]))
 
         # 3. Predict Crop
         crop_result = self.crop_predictor.predict(
@@ -174,8 +175,8 @@ class AgronomyService:
                 "temperature_source": "ESP32_DHT11" if has_live_sensors else "DEFAULT",
                 "humidity_source": "ESP32_DHT11" if has_live_sensors else "DEFAULT",
                 "soil_moisture_source": "ESP32_CAPACITIVE" if has_live_sensors else "DEFAULT",
-                "npk_source": "MANUAL_TEST_REPORT" if self._soil_profile.get("is_manually_entered") else "HARDCODED_DEFAULT",
-                "ph_source": "MANUAL_TEST_REPORT" if self._soil_profile.get("is_manually_entered") else "HARDCODED_DEFAULT",
+                "npk_source": "MANUAL_TEST_REPORT" if active_profile.get("is_manually_entered") else "HARDCODED_DEFAULT",
+                "ph_source": "MANUAL_TEST_REPORT" if active_profile.get("is_manually_entered") else "HARDCODED_DEFAULT",
             },
             "environment": {
                 "temperature_c": round(float(temp_c), 1),
@@ -190,7 +191,7 @@ class AgronomyService:
                 "rainfall_mm": round(rainfall, 1),
                 "soil_type": soil_type,
                 "target_crop": effective_crop,
-                "is_manually_entered": self._soil_profile.get("is_manually_entered", False),
+                "is_manually_entered": active_profile.get("is_manually_entered", False),
             },
             "crop_recommendation": crop_result,
             "fertilizer_recommendation": fertilizer_result,
