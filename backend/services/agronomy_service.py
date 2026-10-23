@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
@@ -33,17 +34,41 @@ class AgronomyService:
         self,
         crop_predictor: CropPredictor,
         fertilizer_predictor: FertilizerPredictor,
+        storage_path: Optional[str] = None,
     ):
         self.crop_predictor = crop_predictor
         self.fertilizer_predictor = fertilizer_predictor
-        self._soil_profile = dict(self.DEFAULT_SOIL_PROFILE)
+        self.storage_path = storage_path or os.environ.get("SOIL_PROFILE_PATH", "/tmp/agrisense_soil_profile.json")
+        self._soil_profile = self._load_profile()
+
+    def _load_profile(self) -> Dict[str, Any]:
+        """Loads profile from shared disk storage or falls back to defaults."""
+        if os.path.exists(self.storage_path):
+            try:
+                with open(self.storage_path, "r") as f:
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        return data
+            except Exception as e:
+                logger.warning("Could not read soil profile storage from %s: %s", self.storage_path, e)
+        return dict(self.DEFAULT_SOIL_PROFILE)
+
+    def _persist_profile(self):
+        """Saves current profile to shared disk storage."""
+        try:
+            with open(self.storage_path, "w") as f:
+                json.dump(self._soil_profile, f, indent=2)
+        except Exception as e:
+            logger.warning("Could not persist soil profile to %s: %s", self.storage_path, e)
 
     def get_soil_profile(self) -> Dict[str, Any]:
         """Returns the current active soil parameters."""
+        self._soil_profile = self._load_profile()
         return dict(self._soil_profile)
 
     def update_soil_profile(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Updates soil test report parameters."""
+        self._soil_profile = self._load_profile()
         if "nitrogen" in data and data["nitrogen"] is not None:
             self._soil_profile["nitrogen"] = max(0.0, min(200.0, float(data["nitrogen"])))
         if "phosphorus" in data and data["phosphorus"] is not None:
@@ -63,12 +88,14 @@ class AgronomyService:
         self._soil_profile["soil_report_date"] = datetime.now(timezone.utc).isoformat()
         self._soil_profile["notes"] = "Updated with farmer soil test report."
 
+        self._persist_profile()
         logger.info("Updated soil profile: %s", self._soil_profile)
         return dict(self._soil_profile)
 
     def reset_soil_profile(self) -> Dict[str, Any]:
         """Resets soil profile back to hardcoded agronomic defaults."""
         self._soil_profile = dict(self.DEFAULT_SOIL_PROFILE)
+        self._persist_profile()
         return dict(self._soil_profile)
 
     def get_agronomy_advisory(
