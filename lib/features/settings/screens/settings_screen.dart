@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../providers/settings_provider.dart';
 import '../../../providers/sensor_provider.dart';
@@ -57,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     controller: _urlController,
                     decoration: InputDecoration(
                       labelText: 'Flask REST API Base URL',
-                      hintText: 'http://10.0.2.2:5001/api/v1',
+                      hintText: AppConfig.awsCloudUrl,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.save_rounded, color: AppColors.primary),
@@ -82,6 +83,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     spacing: 8,
                     runSpacing: 6,
                     children: [
+                      ActionChip(
+                        avatar: const Icon(Icons.cloud_done_rounded, size: 16),
+                        label: const Text('AWS Cloud (IP)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          _urlController.text = AppConfig.awsCloudUrl;
+                          settings.updateApiBaseUrl(_urlController.text);
+                        },
+                      ),
+                      ActionChip(
+                        avatar: const Icon(Icons.dns_rounded, size: 16),
+                        label: const Text('AWS Cloud (DNS)', style: TextStyle(fontSize: 11)),
+                        onPressed: () {
+                          _urlController.text = AppConfig.awsDnsUrl;
+                          settings.updateApiBaseUrl(_urlController.text);
+                        },
+                      ),
                       ActionChip(
                         label: const Text('Android (10.0.2.2)', style: TextStyle(fontSize: 11)),
                         onPressed: () {

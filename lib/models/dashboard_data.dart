@@ -2,6 +2,7 @@ import 'device_status.dart';
 import 'sensor_reading.dart';
 import 'prediction.dart';
 import 'alert_item.dart';
+import 'agronomy_models.dart';
 
 class DashboardData {
   final DeviceStatus device;
@@ -11,6 +12,7 @@ class DashboardData {
   final int totalAlertsCount;
   final int criticalAlertsCount;
   final Map<String, dynamic>? trends24h;
+  final AgronomyAdvisory? agronomy;
 
   DashboardData({
     required this.device,
@@ -20,6 +22,7 @@ class DashboardData {
     this.totalAlertsCount = 0,
     this.criticalAlertsCount = 0,
     this.trends24h,
+    this.agronomy,
   });
 
   factory DashboardData.fromJson(Map<String, dynamic> json) {
@@ -27,6 +30,7 @@ class DashboardData {
     final telJson = json['telemetry'] as Map<String, dynamic>?;
     final recJson = json['recommendation'] as Map<String, dynamic>?;
     final alertSummary = json['alerts_summary'] as Map<String, dynamic>? ?? {};
+    final agroJson = json['agronomy'] as Map<String, dynamic>?;
 
     final alertItemsRaw = alertSummary['items'] as List<dynamic>? ?? [];
     final alertList = alertItemsRaw
@@ -42,6 +46,7 @@ class DashboardData {
       totalAlertsCount: (alertSummary['count'] as num?)?.toInt() ?? alertList.length,
       criticalAlertsCount: (alertSummary['critical_count'] as num?)?.toInt() ?? 0,
       trends24h: json['trends_24h'] as Map<String, dynamic>?,
+      agronomy: agroJson != null ? AgronomyAdvisory.fromJson(agroJson) : null,
     );
   }
 }

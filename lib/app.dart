@@ -5,7 +5,9 @@ import 'services/preferences_service.dart';
 import 'services/api_client.dart';
 import 'providers/settings_provider.dart';
 import 'providers/sensor_provider.dart';
+import 'providers/agronomy_provider.dart';
 import 'features/dashboard/screens/dashboard_screen.dart';
+import 'features/agronomy/screens/agronomy_screen.dart';
 import 'features/analytics/screens/analytics_screen.dart';
 import 'features/ai_insights/screens/ai_insights_screen.dart';
 import 'features/alerts/screens/alerts_screen.dart';
@@ -27,6 +29,7 @@ class AgriSenseApp extends StatelessWidget {
           create: (ctx) => SensorProvider(apiClient, ctx.read<SettingsProvider>()),
           update: (_, settings, previous) => previous ?? SensorProvider(apiClient, settings),
         ),
+        ChangeNotifierProvider(create: (_) => AgronomyProvider(apiClient, prefs)),
       ],
       child: MaterialApp(
         title: 'AgriSense',
@@ -65,9 +68,11 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     final screens = [
       DashboardScreen(
         onNavigateToAlerts: _openAlertsScreen,
-        onNavigateToInsights: () => _navigateToIndex(2),
-        onNavigateToSettings: () => _navigateToIndex(3),
+        onNavigateToAgronomy: () => _navigateToIndex(1),
+        onNavigateToInsights: () => _navigateToIndex(3),
+        onNavigateToSettings: () => _navigateToIndex(4),
       ),
+      const AgronomyScreen(),
       const AnalyticsScreen(),
       const AiInsightsScreen(),
       const SettingsScreen(),
@@ -86,6 +91,11 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             icon: Icon(Icons.dashboard_outlined),
             selectedIcon: Icon(Icons.dashboard_rounded),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.eco_outlined),
+            selectedIcon: Icon(Icons.eco_rounded),
+            label: 'Crop & Soil',
           ),
           NavigationDestination(
             icon: Icon(Icons.show_chart_rounded),
